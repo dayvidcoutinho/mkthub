@@ -19,6 +19,10 @@ export default {
       return Response.redirect(to.toString(), 302);
     }
 
+    if (path === "/calendario" || path === "/calendario/") {
+      return serveAsset(env, request, "/calendario.html");
+    }
+
     for (var key in SECTIONS) {
       var sec = SECTIONS[key];
       if (path === "/" + key || path === "/" + key + "/") {

@@ -1,0 +1,200 @@
+<meta charset="utf-8">
+<title>mkthub · Calendário Geral</title>
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --surface:#FFFFFF;
+    --surface-2:#F3F3F1;
+    --ink:#252525;
+    --ink-soft:#565656;
+    --ink-faint:#8A8A85;
+    --brand:#2B2A28;
+    --kaylua:#A87F3F;
+    --kaylua-bg:#FBF3E5;
+    --msb:#1D4E78;
+    --msb-bg:#E7F0F7;
+    --line:rgba(37,37,37,0.14);
+    --line-soft:rgba(37,37,37,0.08);
+    --shadow: 0 1px 2px rgba(37,37,37,0.04), 0 6px 16px -10px rgba(37,37,37,0.12);
+    --serif: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased; }
+  .wrap{max-width:960px; margin:0 auto; padding:36px 24px 96px;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+
+  .hub-bar{ background:var(--surface-2); border-bottom:1px solid var(--line); }
+  .hub-tabs{ max-width:960px; margin:0 auto; padding:0 24px; display:flex; gap:2px; overflow-x:auto; }
+  .hub-tab{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+    padding:13px 16px; color:var(--ink-faint); text-decoration:none; border-bottom:2px solid transparent; white-space:nowrap;
+  }
+  .hub-tab:hover{ color:var(--ink); }
+  .hub-tab.active{ color:var(--brand); border-bottom-color:var(--brand); font-weight:600; }
+
+  .masthead{ padding-bottom:22px; margin-bottom:28px; border-bottom:2px solid var(--ink); }
+  .masthead h1{ font-family:var(--serif); font-weight:700; font-size:clamp(26px,4vw,36px); margin:0 0 6px; letter-spacing:-0.01em; }
+  .masthead .sub{ font-size:14px; color:var(--ink-soft); }
+
+  .legend{ display:flex; gap:20px; align-items:center; margin-bottom:24px; font-size:12.5px; color:var(--ink-soft); }
+  .legend-item{ display:flex; align-items:center; gap:7px; }
+  .legend-dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .legend-dot.kaylua{ background:var(--kaylua); }
+  .legend-dot.msb{ background:var(--msb); }
+  .load-state{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-left:auto; }
+
+  .cal-header{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .cal-header button{
+    font-family:var(--mono); font-size:12px; border:1px solid var(--line); background:#fff;
+    color:var(--ink); padding:6px 11px; cursor:pointer;
+  }
+  .cal-header button:hover{ border-color:var(--brand); }
+  .cal-header span{ font-family:var(--serif); font-weight:700; font-size:18px; min-width:170px; }
+
+  .cal-weekdays{
+    display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line);
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--ink-faint); text-align:center; margin-bottom:1px;
+  }
+  .cal-weekdays div{ background:var(--surface-2); padding:7px 0; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:32px; }
+  .cal-cell{ background:#fff; min-height:96px; padding:5px; display:flex; flex-direction:column; gap:3px; }
+  .cal-cell.cal-out{ background:var(--surface-2); }
+  .cal-cell.cal-out .cal-daynum{ color:var(--ink-faint); opacity:0.5; }
+  .cal-daynum{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-bottom:2px; }
+  .cal-chip{
+    font-size:10.5px; padding:3px 6px; cursor:pointer; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; border-left:3px solid; line-height:1.5; text-decoration:none; display:block;
+  }
+  .cal-chip.kaylua{ background:var(--kaylua-bg); border-color:var(--kaylua); color:var(--kaylua); }
+  .cal-chip.msb{ background:var(--msb-bg); border-color:var(--msb); color:var(--msb); }
+  .cal-chip:hover{ filter:brightness(0.95); }
+  @media (max-width:640px){ .cal-cell{ min-height:64px; } .cal-chip{ font-size:9px; } }
+
+  .empty-state{ padding:60px 20px; text-align:center; color:var(--ink-faint); font-size:14px; }
+  footer{margin-top:48px; padding-top:20px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-faint); text-align:center;}
+</style>
+
+<div class="hub-bar">
+  <nav class="hub-tabs">
+    <a href="/kaylua" class="hub-tab">Kaylua Eventos</a>
+    <a href="/msb" class="hub-tab">MSB Construtora</a>
+    <a href="/calendario" class="hub-tab active">Calendário Geral</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="masthead">
+    <h1>Calendário Geral</h1>
+    <div class="sub">Todos os posts do mkthub, de todas as contas, num só lugar. Clique num post pra abrir a conta dele.</div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot kaylua"></span> Kaylua Eventos</span>
+    <span class="legend-item"><span class="legend-dot msb"></span> MSB Construtora</span>
+    <span class="load-state" id="loadState">carregando…</span>
+  </div>
+
+  <div class="cal-header">
+    <button type="button" onclick="shiftMonth(-1)">←</button>
+    <span id="calMonthLabel">—</span>
+    <button type="button" onclick="shiftMonth(1)">→</button>
+  </div>
+  <div class="cal-weekdays">
+    <div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+
+  <footer>mkthub · Calendário Geral · agrega Kaylua Eventos e MSB Construtora automaticamente</footer>
+</div>
+
+<script>
+  var allUnits = [];
+  var calendarMonth = new Date();
+  calendarMonth.setDate(1);
+
+  var SOURCES = [
+    { key: 'kaylua', label: 'Kaylua Eventos', api: '/api/kaylua', page: '/kaylua' },
+    { key: 'msb', label: 'MSB Construtora', api: '/api/msb', page: '/msb' }
+  ];
+
+  function extractUnits(html, source){
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var units = [];
+    doc.querySelectorAll('[data-unit="card"], [data-unit="story"]').forEach(function(el){
+      var dateInput = el.querySelector('.post-date');
+      var date = dateInput ? dateInput.getAttribute('value') : '';
+      if (!date) return;
+      var isCard = el.getAttribute('data-unit') === 'card';
+      var titleEl = isCard ? el.querySelector('.card-title') : el.querySelector('h4');
+      units.push({
+        date: date,
+        title: titleEl ? titleEl.textContent.trim() : '(sem titulo)',
+        source: source.key,
+        page: source.page
+      });
+    });
+    return units;
+  }
+
+  function loadAll(){
+    document.getElementById('loadState').textContent = 'carregando…';
+    Promise.all(SOURCES.map(function(s){
+      return fetch(s.api, {cache:'no-store'}).then(function(r){ return r.json(); })
+        .then(function(res){ return res.html ? extractUnits(res.html, s) : []; })
+        .catch(function(){ return []; });
+    })).then(function(results){
+      allUnits = results.flat ? results.flat() : results.reduce(function(a,b){ return a.concat(b); }, []);
+      document.getElementById('loadState').textContent = allUnits.length + ' posts com data carregados';
+      if (allUnits.length){
+        var sorted = allUnits.slice().sort(function(a,b){ return a.date.localeCompare(b.date); });
+        calendarMonth = new Date(sorted[0].date + 'T00:00:00');
+        calendarMonth.setDate(1);
+      }
+      renderCalendar();
+    });
+  }
+
+  function shiftMonth(delta){
+    calendarMonth.setMonth(calendarMonth.getMonth() + delta);
+    renderCalendar();
+  }
+
+  function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function renderCalendar(){
+    var byDate = {};
+    allUnits.forEach(function(u){ (byDate[u.date] = byDate[u.date] || []).push(u); });
+
+    var y = calendarMonth.getFullYear(), m = calendarMonth.getMonth();
+    var monthNames = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    document.getElementById('calMonthLabel').textContent = monthNames[m] + ' ' + y;
+
+    var firstOfMonth = new Date(y, m, 1);
+    var startWeekday = (firstOfMonth.getDay() + 6) % 7;
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+    var totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+
+    var html = '';
+    var d = new Date(y, m, 1 - startWeekday);
+    for (var i = 0; i < totalCells; i++){
+      var inMonth = d.getMonth() === m;
+      var iso = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+      var dayUnits = byDate[iso] || [];
+      html += '<div class="cal-cell' + (inMonth ? '' : ' cal-out') + '">' +
+        '<div class="cal-daynum">' + d.getDate() + '</div>' +
+        dayUnits.map(function(u){
+          return '<a class="cal-chip ' + u.source + '" href="' + u.page + '" title="' +
+            u.title.replace(/"/g, '&quot;') + ' — abrir ' + u.page + '">' + u.title + '</a>';
+        }).join('') +
+        '</div>';
+      d.setDate(d.getDate() + 1);
+    }
+    document.getElementById('calGrid').innerHTML = html;
+  }
+
+  loadAll();
+</script>
