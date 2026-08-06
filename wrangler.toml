@@ -1,0 +1,13 @@
+name = "mkthub"
+compatibility_date = "2025-01-01"
+main = "worker.js"
+
+[assets]
+directory = "./"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mkthub-db"
+database_id = "PREENCHER_APOS_CRIAR_O_BANCO_D1"
