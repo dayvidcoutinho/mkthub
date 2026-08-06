@@ -10,4 +10,4 @@ not_found_handling = "single-page-application"
 [[d1_databases]]
 binding = "DB"
 database_name = "mkthub-db"
-database_id = "PREENCHER_APOS_CRIAR_O_BANCO_D1"
+database_id = "8f74dbdb-5fd3-4e1d-a848-4707deb03bf3"
