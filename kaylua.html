@@ -15,6 +15,7 @@
     --ink-faint:#8A8468;
     --gold:#A87F3F;
     --gold-deep:#8A6530;
+    --brand:#8A6530;
     --brick:#9B4530;
     --moss:#4B5D3A;
     --line:rgba(43,42,31,0.14);
@@ -32,6 +33,19 @@
     -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:920px; margin:0 auto; padding:36px 24px 96px;}
+
+  /* Hub tab bar — shared nav across mkthub sections */
+  .hub-bar{ background:var(--surface-2); border-bottom:1px solid var(--line); }
+  .hub-tabs{
+    max-width:920px; margin:0 auto; padding:0 24px; display:flex; gap:2px; overflow-x:auto;
+  }
+  .hub-tab{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+    padding:13px 16px; color:var(--ink-faint); text-decoration:none; border-bottom:2px solid transparent;
+    white-space:nowrap;
+  }
+  .hub-tab:hover{ color:var(--ink); }
+  .hub-tab.active{ color:var(--brand); border-bottom-color:var(--brand); font-weight:600; }
   ::selection{background:var(--gold); color:var(--surface);}
   a{color:inherit;}
   :focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
@@ -330,6 +344,13 @@
     body.single-print .checklist{ display:none; }
   }
 </style>
+
+<div class="hub-bar no-print">
+  <nav class="hub-tabs">
+    <a href="/kaylua" class="hub-tab active">Kaylua Eventos</a>
+    <a href="/msb" class="hub-tab">MSB Construtora</a>
+  </nav>
+</div>
 
 <div class="wrap" id="app">
 

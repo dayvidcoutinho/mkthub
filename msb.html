@@ -1,0 +1,1670 @@
+<meta charset="utf-8">
+<title>mkthub · MSB Construtora</title>
+<style>
+  /* Deliberately single-theme: branded white/pastel look stays constant regardless of
+     viewer's system theme, same as the print output would be. */
+  :root, :root[data-theme="dark"], :root[data-theme="light"]{
+    --bg:#FFFFFF;
+    --surface:#FFFFFF;
+    --surface-2:#EEF2F5;
+    --card-gold:#E7F0F7;
+    --card-moss:#EEF1F3;
+    --card-brick:#FBEEE1;
+    --ink:#232B33;
+    --ink-soft:#4A5560;
+    --ink-faint:#798591;
+    --gold:#2E6DA4;
+    --gold-deep:#1D4E78;
+    --brand:#1D4E78;
+    --brick:#C96A2E;
+    --moss:#5B6B7A;
+    --line:rgba(35,43,51,0.14);
+    --line-soft:rgba(35,43,51,0.08);
+    --shadow: 0 1px 2px rgba(35,43,51,0.04), 0 6px 16px -10px rgba(35,43,51,0.12);
+    --serif: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px; margin:0 auto; padding:36px 24px 96px;}
+
+  /* Hub tab bar — shared nav across mkthub sections */
+  .hub-bar{ background:var(--surface-2); border-bottom:1px solid var(--line); }
+  .hub-tabs{
+    max-width:920px; margin:0 auto; padding:0 24px; display:flex; gap:2px; overflow-x:auto;
+  }
+  .hub-tab{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+    padding:13px 16px; color:var(--ink-faint); text-decoration:none; border-bottom:2px solid transparent;
+    white-space:nowrap;
+  }
+  .hub-tab:hover{ color:var(--ink); }
+  .hub-tab.active{ color:var(--brand); border-bottom-color:var(--brand); font-weight:600; }
+  ::selection{background:var(--gold); color:var(--surface);}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+
+  /* Editable affordance */
+  [contenteditable="true"]{ border-radius:2px; cursor:text; }
+  [contenteditable="true"]:hover{ background:rgba(46,109,164,0.10); }
+  [contenteditable="true"]:focus{ background:rgba(46,109,164,0.16); box-shadow:0 0 0 1px var(--gold); outline:none; }
+
+  /* Top toolbar */
+  .toolbar{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px;
+  }
+  .toolbar button, .toolbar label.filebtn{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+    padding:8px 13px; border:1px solid var(--ink); background:var(--surface); color:var(--ink);
+    cursor:pointer; white-space:nowrap;
+  }
+  .toolbar button:hover, .toolbar label.filebtn:hover{ border-color:var(--gold-deep); color:var(--gold-deep); }
+  .toolbar input[type=file]{ display:none; }
+  .save-state{ font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); margin-left:auto; }
+  .save-state.saved{ color:var(--moss); }
+
+  .howto{
+    background:var(--surface-2); border-left:3px solid var(--gold); padding:12px 16px;
+    font-size:12.5px; color:var(--ink-soft); margin-bottom:28px;
+  }
+  .howto b{color:var(--ink);}
+
+  /* Masthead */
+  .masthead{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+    padding-bottom:28px; margin-bottom:32px; border-bottom:2px solid var(--ink);
+    flex-wrap:wrap;
+  }
+  .logo{ height:60px; width:auto; display:block; margin-bottom:6px; }
+  .logo-text{
+    display:inline-block; font-family:var(--sans); font-weight:800; font-size:20px; letter-spacing:0.08em;
+    color:var(--gold-deep); padding:6px 12px; border:2px solid var(--gold-deep); margin-bottom:10px;
+  }
+  .masthead h1{
+    font-family:var(--serif); font-weight:700; font-size:clamp(28px,4.2vw,40px);
+    margin:10px 0 4px; letter-spacing:-0.01em; text-wrap:balance;
+  }
+  .masthead .sub{ font-size:14.5px; color:var(--ink-soft); font-style:italic; }
+  .masthead .status{
+    text-align:right; font-family:var(--mono); font-size:11.5px; color:var(--ink-faint);
+    text-transform:uppercase; letter-spacing:0.08em; line-height:1.7;
+  }
+
+  .callout{
+    background:var(--surface-2); border-left:3px solid var(--brick);
+    padding:16px 20px; margin-bottom:36px; font-size:14.5px; color:var(--ink-soft);
+  }
+  .callout strong{color:var(--ink); font-weight:600;}
+  .callout ul{margin:8px 0 0; padding-left:20px;}
+  .callout li{margin-bottom:4px;}
+
+  .stats{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); margin-bottom:44px;
+  }
+  .stat{background:var(--surface); padding:16px 10px; text-align:center;}
+  .stat .n{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:26px; color:var(--gold-deep); font-weight:600;}
+  .stat .l{font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-faint); margin-top:4px;}
+  @media (max-width:640px){ .stats{grid-template-columns:repeat(3,1fr);} }
+
+  /* Week section */
+  .week{margin-bottom:44px; position:relative;}
+  .week-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px;}
+  .week-num{font-family:var(--serif); font-size:13px; color:var(--gold-deep); letter-spacing:0.1em; white-space:nowrap;}
+  .week-title{font-family:var(--serif); font-weight:700; font-size:21px; flex:1;}
+  .week-rule{height:1px; background:linear-gradient(to right, var(--gold), transparent); margin:10px 0 22px;}
+
+  .day-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;}
+  @media (max-width:720px){ .day-grid{grid-template-columns:1fr;} }
+
+  /* Post card */
+  .card{ background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow); position:relative; }
+  .card.video{ background:var(--card-gold); border-left:3px solid var(--gold); }
+  .card-head{padding:14px 40px 12px 18px; border-bottom:1px solid var(--line-soft); position:relative;}
+  .card-day{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-faint); display:inline-block;}
+  .post-date{
+    font-family:var(--mono); font-size:10px; color:var(--gold-deep); background:var(--surface-2);
+    border:1px solid var(--line); padding:2px 5px; margin-left:8px; border-radius:2px; cursor:pointer;
+  }
+  .post-date:hover{ border-color:var(--gold-deep); }
+  .post-date:focus{ outline:none; box-shadow:0 0 0 1px var(--gold); }
+  .card-title{font-family:var(--serif); font-weight:700; font-size:16.5px; margin:4px 0 8px; text-wrap:balance;}
+  .tags{display:flex; gap:6px; flex-wrap:wrap;}
+  .tag{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; padding:2px 7px; border:1px solid currentColor;}
+  .tag.gold{color:var(--gold-deep);}
+  .tag.brick{color:var(--brick);}
+  .tag.moss{color:var(--moss);}
+
+  .meta{display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; padding:12px 18px; font-size:12.5px;}
+  .meta div b{display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-faint); font-weight:600; margin-bottom:2px;}
+  .meta div span{color:var(--ink-soft); display:block;}
+
+  details{border-top:1px solid var(--line-soft);}
+  summary{
+    cursor:pointer; padding:11px 18px; font-size:12.5px; font-weight:600;
+    color:var(--gold-deep); list-style:none; display:flex; align-items:center; gap:6px;
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary:before{content:"▸"; font-size:11px; transition:transform .15s;}
+  details[open] summary:before{transform:rotate(90deg);}
+  .script{padding:2px 18px 14px;}
+  .beat{padding:10px 30px 10px 0; border-top:1px dashed var(--line); position:relative;}
+  .beat:first-child{border-top:none;}
+  .beat-time{font-family:var(--mono); font-size:11px; color:var(--gold-deep); font-variant-numeric:tabular-nums; display:inline-block; min-width:20px;}
+  .beat-label{font-weight:700; font-size:13px; margin:2px 0 3px;}
+  .beat-cam{font-size:11px; color:var(--ink-faint); font-style:italic; margin-bottom:4px;}
+  .beat-desc{margin:0 0 4px; font-size:13.5px; color:var(--ink-soft);}
+  .line-fala{
+    font-family:var(--serif); font-style:italic; font-size:14px; color:var(--ink);
+    border-left:2px solid var(--gold); padding-left:10px; margin:6px 0;
+  }
+  .copy-block{background:var(--surface-2); padding:14px 16px; margin-top:8px; font-size:13px; color:var(--ink-soft);}
+  .copy-block b{display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-faint); margin-bottom:6px;}
+  .copy-text{display:block;}
+  .cta{margin-top:10px; font-size:12.5px; display:block;}
+  .cta b{color:var(--brick);}
+
+  .add-beat{
+    margin:8px 18px 16px; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--gold-deep); background:none; border:1px dashed var(--gold); padding:7px 12px; cursor:pointer; display:inline-block;
+  }
+  .add-beat:hover{ background:rgba(46,109,164,.10); }
+
+  /* Delete / print icon buttons */
+  .icon-btn{
+    position:absolute; width:22px; height:22px; border:1px solid var(--line);
+    background:var(--surface); color:var(--ink-faint); font-size:12px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;
+  }
+  .icon-btn:hover{ color:var(--brick); border-color:var(--brick); }
+  .icon-btn.print-ic:hover{ color:var(--gold-deep); border-color:var(--gold-deep); }
+  .beat .icon-btn{ top:10px; right:0; }
+  .card > .icon-btn.del-card{ top:14px; right:14px; z-index:2; }
+  .card > .icon-btn.print-card{ top:14px; right:40px; z-index:2; }
+  .story .icon-btn{ top:10px; right:10px; }
+
+  /* Stories row */
+  .stories{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:720px){ .stories{grid-template-columns:1fr;} }
+  .story{background:var(--card-moss); border:1px solid var(--line); border-left:3px solid var(--moss); padding:14px 34px 14px 16px; position:relative;}
+  .story .card-day{margin-bottom:4px;}
+  .story h4{font-family:var(--serif); font-size:14px; margin:2px 0 6px;}
+  .story p{font-size:12.5px; color:var(--ink-soft); margin:0;}
+  .add-story{
+    background:var(--surface); border:1px dashed var(--moss); color:var(--moss);
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; min-height:74px;
+  }
+  .add-story:hover{ background:rgba(91,107,122,.08); }
+
+  .week-actions{ display:flex; gap:16px; margin-top:14px; }
+  .week-actions button{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+    background:none; border:none; color:var(--ink-faint); cursor:pointer; padding:0;
+  }
+  .week-actions button:hover{ color:var(--brick); }
+
+  .add-video{
+    background:var(--surface); border:1px dashed var(--gold); color:var(--gold-deep);
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; min-height:120px;
+  }
+  .add-video:hover{ background:rgba(46,109,164,.08); }
+
+  .add-week-wrap{ text-align:center; margin:36px 0 52px; }
+  .add-week{
+    font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
+    padding:12px 22px; border:1.5px dashed var(--gold); background:none; color:var(--gold-deep); cursor:pointer;
+  }
+  .add-week:hover{ background:rgba(46,109,164,.08); }
+
+  /* Checklist */
+  .checklist{ background:var(--surface); border:1px solid var(--line); padding:24px 26px; margin-top:16px; }
+  .checklist h2{font-family:var(--serif); font-size:19px; margin:0 0 4px;}
+  .checklist .sub{font-size:12.5px; color:var(--ink-faint); margin-bottom:16px;}
+  .check-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px 24px;}
+  @media (max-width:640px){ .check-grid{grid-template-columns:1fr;} }
+  .check-item{display:flex; align-items:flex-start; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-soft); font-size:13.5px;}
+  .check-item input{margin-top:3px; width:15px; height:15px; accent-color:var(--gold-deep); flex-shrink:0;}
+  .check-item label{cursor:text; flex:1;}
+  .check-item.done label{color:var(--ink-faint); text-decoration:line-through;}
+  .add-check{
+    margin-top:14px; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--gold-deep); background:none; border:1px dashed var(--gold); padding:7px 12px; cursor:pointer;
+  }
+
+  footer{margin-top:48px; padding-top:20px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-faint); text-align:center;}
+
+  /* Custom confirm modal (kept for a consistent look instead of the browser's native dialog) */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(43,42,31,0.45);
+    display:none; align-items:center; justify-content:center; z-index:1000; padding:20px;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal-box{ background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); padding:22px 24px; max-width:360px; width:100%; }
+  .modal-box p{ font-size:14px; color:var(--ink); margin:0 0 18px; line-height:1.5; }
+  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; }
+  .modal-actions button{
+    font-family:var(--sans); font-size:12.5px; padding:8px 16px; border:1px solid var(--line);
+    background:#fff; color:var(--ink); cursor:pointer;
+  }
+  .modal-actions #modalOk{ background:var(--brick); color:#fff; border-color:var(--brick); }
+  .modal-actions button:hover{ opacity:0.85; }
+
+  .history-box{ max-width:460px; }
+  .history-box h3{ font-family:var(--serif); font-size:17px; margin:0 0 14px; }
+  .history-list{ max-height:340px; overflow-y:auto; margin-bottom:16px; border-top:1px solid var(--line-soft); }
+  .history-item{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:10px 2px; border-bottom:1px solid var(--line-soft); font-size:13px;
+  }
+  .history-item em{ color:var(--gold-deep); font-style:normal; font-size:11px; }
+  .history-item button{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+    padding:6px 11px; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; white-space:nowrap;
+  }
+  .history-item button:hover{ border-color:var(--gold-deep); color:var(--gold-deep); }
+
+  /* Calendar view */
+  .calendar-view{
+    display:none; background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:18px 20px 20px; margin-bottom:36px;
+  }
+  .calendar-view.show{ display:block; }
+  .cal-header{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .cal-header button{
+    font-family:var(--mono); font-size:12px; border:1px solid var(--line); background:#fff;
+    color:var(--ink); padding:5px 10px; cursor:pointer;
+  }
+  .cal-header button:hover{ border-color:var(--gold-deep); color:var(--gold-deep); }
+  .cal-header span{ font-family:var(--serif); font-weight:700; font-size:16px; min-width:150px; }
+  .cal-header .cal-close{ margin-left:auto; }
+  .cal-weekdays{
+    display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line);
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--ink-faint); text-align:center; margin-bottom:1px;
+  }
+  .cal-weekdays div{ background:var(--surface-2); padding:6px 0; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .cal-cell{ background:#fff; min-height:78px; padding:4px; display:flex; flex-direction:column; gap:2px; transition:background .1s; }
+  .cal-cell.cal-out{ background:var(--surface-2); }
+  .cal-cell.cal-out .cal-daynum{ color:var(--ink-faint); opacity:0.5; }
+  .cal-cell.drag-over{ background:rgba(46,109,164,0.16); outline:2px dashed var(--gold); outline-offset:-2px; }
+  .cal-daynum{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-bottom:2px; }
+  .cal-chip{
+    font-size:10px; padding:2px 5px; cursor:grab; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; border-left:2px solid; line-height:1.5;
+  }
+  .cal-chip:active{ cursor:grabbing; }
+  .cal-chip.dragging{ opacity:0.4; }
+  .cal-chip.cal-video{ background:var(--card-gold); border-color:var(--gold); color:var(--gold-deep); }
+  .cal-chip.cal-story{ background:var(--card-moss); border-color:var(--moss); color:var(--moss); }
+  .cal-chip:hover{ filter:brightness(0.95); }
+  .cal-undated{ margin-top:14px; padding:10px; border:1px dashed transparent; transition:border-color .1s; }
+  .cal-undated.drag-over{ border-color:var(--brick); background:var(--card-brick); }
+  .cal-undated-label{ font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
+  .cal-undated .cal-chip{ display:inline-block; margin:0 6px 6px 0; }
+  @keyframes flashHighlight{ 0%,100%{ box-shadow:0 0 0 0 rgba(46,109,164,0); } 30%{ box-shadow:0 0 0 4px rgba(46,109,164,0.5); } }
+  .flash-highlight{ animation:flashHighlight 1.6s ease; }
+  @media (max-width:640px){ .cal-cell{ min-height:56px; } .cal-chip{ font-size:9px; } }
+
+  /* Toast (native alert() is blocked in this sandbox) */
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translate(-50%,16px);
+    background:var(--ink); color:#fff; padding:13px 20px; font-size:13px; line-height:1.4;
+    max-width:min(420px, 90vw); text-align:center; border-radius:2px;
+    opacity:0; pointer-events:none; transition:opacity .18s, transform .18s; z-index:1001;
+    box-shadow:var(--shadow);
+  }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+
+  /* ============ PRINT ============ */
+  @media print{
+    .no-print{ display:none !important; }
+    body{ background:#fff; color:#000; }
+    .wrap{ max-width:100%; padding:0; }
+    .card, .story, .checklist{ box-shadow:none; border:1px solid #999; break-inside:avoid; }
+    [contenteditable]{ background:none !important; box-shadow:none !important; }
+    details{ display:block !important; }
+    details summary{ display:none !important; }
+    details > .script{ display:block !important; }
+    .add-beat, .add-story, .add-video, .add-week-wrap, .add-check{ display:none !important; }
+    .post-date{ display:none !important; }
+    .icon-btn{ display:none !important; }
+    a[href]:after{ content:""; }
+
+    body.single-print .week{ display:none; }
+    body.single-print .week.print-target{ display:block; }
+    body.single-print .day-grid > *{ display:none; }
+    body.single-print .day-grid > .print-target{ display:block; }
+    body.single-print .stories{ display:none; }
+    body.single-print .checklist{ display:none; }
+  }
+</style>
+
+<div class="hub-bar no-print">
+  <nav class="hub-tabs">
+    <a href="/kaylua" class="hub-tab">Kaylua Eventos</a>
+    <a href="/msb" class="hub-tab active">MSB Construtora</a>
+  </nav>
+</div>
+
+<div class="wrap" id="app">
+
+  <div class="toolbar no-print">
+    <button onclick="toggleCalendar()">📅 Calendário</button>
+    <button onclick="openHistory()">🕘 Histórico</button>
+    <button onclick="printAll()">🖨 Imprimir tudo</button>
+    <button onclick="exportHTML()">⬇ Baixar cópia</button>
+    <label class="filebtn">⬆ Restaurar de arquivo<input type="file" accept=".html,.htm" onchange="importHTML(event)"></label>
+    <span class="save-state" id="saveState">—</span>
+  </div>
+
+  <div class="howto no-print">
+    <b>Como isso funciona:</b> tudo aqui é editável — clique em qualquer texto e altere direto. "+" adiciona blocos, "×" remove. As edições são <b>salvas no servidor e compartilhadas</b> — qualquer pessoa que abrir esse link vê e edita o mesmo conteúdo, em tempo real a cada recarregamento. Nada se perde: toda vez que algo é salvo, uma nova versão fica guardada no <b>🕘 Histórico</b>. Cada post tem um campinho de data — preenche pra ele aparecer no <b>📅 Calendário</b>.
+  </div>
+
+  <div class="calendar-view no-print" id="calendarView">
+    <div class="cal-header">
+      <button type="button" onclick="shiftMonth(-1)">←</button>
+      <span id="calMonthLabel">—</span>
+      <button type="button" onclick="shiftMonth(1)">→</button>
+      <button type="button" class="cal-close" onclick="toggleCalendar()">Fechar ×</button>
+    </div>
+    <div class="cal-weekdays">
+      <div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-undated" id="calUndated"></div>
+  </div>
+
+  <div class="masthead">
+    <div>
+      <span class="logo-text">MSB</span>
+      <h1 contenteditable="true">Gerenciador de Conteúdo — Mês 1</h1>
+      <div class="sub" contenteditable="true">Conta 01 · @msbconstrutoranf · cadência: 3 posts/semana (seg · qua · sex)</div>
+    </div>
+    <div class="status" contenteditable="true">v1 — ago/2026<br>base: calendário original<br>revisar vs. Instagram real</div>
+  </div>
+
+  <div class="callout">
+    <strong>Antes de gravar, um alinhamento importante:</strong>
+    <ul>
+      <li contenteditable="true">Este conteúdo replica o "Calendário Completo — 1 Mês" original da MSB (Papo de Obra, Drone, Ferramentas da Obra etc.). Uma auditoria do Instagram real (@msbconstrutoranf) mostrou que a bio ainda não usa a tagline definida ("Engenharia que transforma cidades"), os destaques planejados não foram criados, e os posts recentes vêm saindo como "vlog" genérico, não como "Papo de Obra Ep.X". Confirmar com o time se esse plano ainda é o que vale ou se precisa de ajuste antes de retomar.</li>
+      <li contenteditable="true">A Gleyci aparece em 6 dos 12 posts do mês — confirmar agenda de gravação com ela antes de fechar o calendário.</li>
+    </ul>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">12</div><div class="l">Posts</div></div>
+    <div class="stat"><div class="n">8</div><div class="l">Reels</div></div>
+    <div class="stat"><div class="n">4</div><div class="l">Estáticos</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">Posts/semana</div></div>
+    <div class="stat"><div class="n">2</div><div class="l">Voos de drone</div></div>
+    <div class="stat"><div class="n">6</div><div class="l">Gleyci em vídeo</div></div>
+  </div>
+
+  <div id="weeks">
+  <!-- ===================== SEMANA 1 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <span class="week-num" contenteditable="true">SEMANA 1</span>
+      <span class="week-title" contenteditable="true">Autoridade Técnica + Presença</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Segunda · Reel · 40–45s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Papo de Obra — Ep. 12 · Logística de Canteiro</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Técnico</span><span class="tag brick" contenteditable="true">Gleyci</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">Canteiro aberto + área de reunião</span></div>
+          <div><b>Protagonistas</b><span contenteditable="true">Gleyci + Eng. de Produção</span></div>
+          <div><b>Câmera</b><span contenteditable="true">Gimbal estabilizado</span></div>
+          <div><b>Melhor luz</b><span contenteditable="true">Manhã · 8h–10h</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–3s</span>
+              <div class="beat-label" contenteditable="true">Vinheta de abertura</div>
+              <p class="beat-desc" contenteditable="true">Tela preta, texto centralizado: "PAPO DE OBRA · EP. 12 — Logística de Canteiro". Trilha instrumental suave entra em volume baixo.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">3–7s</span>
+              <div class="beat-label" contenteditable="true">Entrada da Gleyci</div>
+              <div class="beat-cam" contenteditable="true">Plano médio · câmera na altura do peito · obra ao fundo desfocada</div>
+              <div class="line-fala" contenteditable="true">"Você já parou pra pensar como é que alguém organiza tudo isso? Oitenta profissionais, material, prazo, segurança... ao mesmo tempo."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">7–10s</span>
+              <div class="beat-label" contenteditable="true">Insert: canteiro em movimento</div>
+              <p class="beat-desc" contenteditable="true">Plano aberto, gimbal no solo — trabalhadores e equipamento em movimento, sem texto, só música. Estabelece a escala.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">10–12s</span>
+              <div class="beat-label" contenteditable="true">Entrada do especialista</div>
+              <p class="beat-desc" contenteditable="true">Engenheiro/gestor de produção olha direto pra câmera. Texto: "[Nome] — [Cargo] · MSB Construtora".</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">12–36s</span>
+              <div class="beat-label" contenteditable="true">Resposta do especialista</div>
+              <div class="line-fala" contenteditable="true">"A logística começa antes do dia começar. Todo dia, antes das seis e meia, tem reunião de equipe — cada encarregado sabe exatamente o que o time dele vai executar. Quando você tem oitenta pessoas chegando no mesmo lugar ao mesmo tempo, sem organização, para tudo."</div>
+              <p class="beat-desc" contenteditable="true">Inserir plano do canteiro a cada 8s pra manter ritmo visual.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">36–41s</span>
+              <div class="beat-label" contenteditable="true">Fechamento — Gleyci</div>
+              <div class="line-fala" contenteditable="true">"Toda segunda tem um papo novo aqui. Qual tema você quer ver no próximo?"</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">41–45s</span>
+              <div class="beat-label" contenteditable="true">Encerramento</div>
+              <p class="beat-desc" contenteditable="true">Logo MSB + "Papo de Obra · @msbconstrutoranf".</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Tem 80 profissionais trabalhando ao mesmo tempo no canteiro do Pátio Friburgo. Como você organiza tudo isso? Essa foi a pergunta que a Gleyci fez pro especialista — e a resposta vai mudar a forma como você enxerga uma obra. Episódio 12 do Papo de Obra. Toda segunda tem um capítulo novo. #PátioFriburgo #MSBConstrutora #PapoDeObra #ConstruçãoCivil #NovaFriburgo</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Qual sistema da obra você quer entender no próximo episódio? Comenta aqui.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quarta · Post Único</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Detalhes da Obra — Armação Estrutural</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Técnico</span><span class="tag brick" contenteditable="true">Editorial</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Elemento</b><span contenteditable="true">Armação de ferro/aço em close extremo</span></div>
+          <div><b>Ângulo</b><span contenteditable="true">Diagonal 15–30° · nunca frontal</span></div>
+          <div><b>Luz</b><span contenteditable="true">Natural lateral, manhã cedo</span></div>
+          <div><b>Formato</b><span contenteditable="true">Vertical 9:16 · logo MSB pequeno</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Foto única</span>
+              <div class="beat-label" contenteditable="true">Briefing fotográfico</div>
+              <p class="beat-desc" contenteditable="true">Close extremo preenchendo 90% do frame — o olho perde a referência de escala, é intencional. Foco nítido no detalhe, fundo desfocado (bokeh), sensação de fotografia editorial. Tons frios e naturais do ferro, não saturar.</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Antes que qualquer parede suba, existe isso. Armação calculada. Dimensionada. Verificada. Invisível no resultado final. Indispensável para ele. #MSBConstrutora #PátioFriburgo #EngenhariaCivil #ConstruçãoCivil #DetalhesDeObra</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Salva essa foto. É raro ver esse nível de detalhe.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Sexta · Reel · 35–40s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Na Obra com a Gleyci — Update da Fase Atual</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Humanização</span><span class="tag brick" contenteditable="true">Gleyci</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">Área com maior progresso no mês</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">Gleyci solo</span></div>
+          <div><b>Tom</b><span contenteditable="true">Pessoal, próximo, descoberta</span></div>
+          <div><b>Melhor luz</b><span contenteditable="true">Tarde · 14h–16h</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–4s</span>
+              <div class="beat-label" contenteditable="true">Entrada caminhando</div>
+              <p class="beat-desc" contenteditable="true">Câmera na mão, segue Gleyci por trás caminhando em direção à obra — sensação de entrar junto.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">4–8s</span>
+              <div class="beat-label" contenteditable="true">Virada pra câmera</div>
+              <div class="line-fala" contenteditable="true">"Então — você não vai acreditar no que aconteceu aqui essa semana."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">8–22s</span>
+              <div class="beat-label" contenteditable="true">Passeio pela área</div>
+              <div class="line-fala" contenteditable="true">"Olha esse pavimento aqui — na semana passada ainda estava em concretagem. Agora olha: a estrutura tá fechada."</div>
+              <p class="beat-desc" contenteditable="true">Linguagem livre, adaptar com o que realmente avançou na semana.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">22–28s</span>
+              <div class="beat-label" contenteditable="true">Momento de parada</div>
+              <p class="beat-desc" contenteditable="true">Gleyci de perfil, olhando pra obra, 2-3s sem falar — contemplação que comunica mais que palavras.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">28–35s</span>
+              <div class="beat-label" contenteditable="true">Conexão com o futuro</div>
+              <div class="line-fala" contenteditable="true">"E quando isso aqui abrir... vocês vão lembrar que acompanharam desde o começo. Ativa o sino pra não perder nada."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">35–40s</span>
+              <div class="beat-label" contenteditable="true">Encerramento</div>
+              <p class="beat-desc" contenteditable="true">Logo MSB + "Na Obra com a Gleyci · @msbconstrutoranf".</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Essa semana a obra deu mais um salto. E a Gleyci foi lá ver de perto — antes de todo mundo. Cada semana que passa, o Pátio Friburgo fica mais próximo de abrir as portas. #PátioFriburgo #MSBConstrutora #NaObraComAGleyci #NovaFriburgo #ConstruçãoCivil</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Ativa o sino. Toda semana tem novidade da obra.</span></span>
+          </div>
+        </details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar post nesta semana</button>
+
+    <div class="stories">
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+
+  <!-- ===================== SEMANA 2 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <span class="week-num" contenteditable="true">SEMANA 2</span>
+      <span class="week-title" contenteditable="true">Escala, Drone e Humanização</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Segunda · Reel Drone · 28–32s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Drone + Frase de Impacto — A Obra no Contexto da Cidade</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Institucional</span><span class="tag brick" contenteditable="true">Drone</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Drone</b><span contenteditable="true">DJI Mini 3 Pro ou superior</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">Nenhum — só drone e texto</span></div>
+          <div><b>Melhor horário</b><span contenteditable="true">Manhã cedo · 7h–8h30 · luz dourada</span></div>
+          <div><b>Condição</b><span contenteditable="true">Dia sem vento · visibilidade máxima</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–5s</span>
+              <div class="beat-label" contenteditable="true">Abertura — plano alto da cidade</div>
+              <p class="beat-desc" contenteditable="true">Altitude 80–100m, câmera a 60°, Nova Friburgo com montanhas ao fundo, obra ainda não aparece. Drone estático 3s.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">5–12s</span>
+              <div class="beat-label" contenteditable="true">Travelling de revelação</div>
+              <p class="beat-desc" contenteditable="true">Drone avança, câmera desce de 60° pra 45°, obra revelada gradualmente. Texto: "Toda grande cidade tem um momento que muda sua forma."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">12–20s</span>
+              <div class="beat-label" contenteditable="true">Órbita sobre a obra</div>
+              <p class="beat-desc" contenteditable="true">Altitude 40–50m, órbita lenta horária, mostra estrutura e andaimes com a cidade ao fundo. Texto: "Nova Friburgo está vivendo o seu."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">20–26s</span>
+              <div class="beat-label" contenteditable="true">Subida final</div>
+              <p class="beat-desc" contenteditable="true">Sobe de 40m pra 80m, cidade se expande, montanhas aparecem — plano mais impactante. Texto: "Construímos o que Nova Friburgo vai se tornar."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">26–32s</span>
+              <div class="beat-label" contenteditable="true">Encerramento</div>
+              <p class="beat-desc" contenteditable="true">Drone estático, hold 3s. Texto: "MSB Construtora · Projetos e Construções" + @msbconstrutoranf.</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Visto de cima, fica mais fácil entender o que está acontecendo aqui. O Pátio Friburgo não é apenas o maior empreendimento comercial em desenvolvimento da Região Serrana — é um ponto de inflexão no desenvolvimento urbano de Nova Friburgo. Tijolo por tijolo. Laje por laje. #MSBConstrutora #PátioFriburgo #NovaFriburgo #EngenhariaQueTransformaCidades #RegiãoSerrana</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Compartilha com alguém que é de Friburgo e precisa ver isso.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quarta · Carrossel · 8 slides</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">As Ferramentas Mais Utilizadas na Obra</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Educativo</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Formato</b><span contenteditable="true">Carrossel 8 slides</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">Ferramentas em uso no canteiro</span></div>
+          <div><b>Tom</b><span contenteditable="true">Fundo escuro, texto bold</span></div>
+          <div><b>Produção</b><span contenteditable="true">Fotos do dia a dia da obra</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 1</span>
+              <div class="beat-label" contenteditable="true">Capa — Gancho</div>
+              <p class="beat-desc" contenteditable="true">"Você conhece essas ferramentas? A gente usa todas aqui no Pátio Friburgo." Subtítulo: "As principais ferramentas de uma obra de grande porte."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 2</span>
+              <div class="beat-label" contenteditable="true">Furadeira de Impacto / Martelete</div>
+              <p class="beat-desc" contenteditable="true">Foto em uso, perfurando laje/parede. "Abre passagens para tubulações, fixa elementos estruturais e ancora equipamentos."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 3</span>
+              <div class="beat-label" contenteditable="true">Nível a Laser / Nível de Bolha</div>
+              <p class="beat-desc" contenteditable="true">"Garantia de que tudo está alinhado, prumo e nivelado. Sem essa ferramenta, o que parece certo aos olhos pode estar milímetros fora."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 4</span>
+              <div class="beat-label" contenteditable="true">Esmerilhadeira (Rebarbadora)</div>
+              <p class="beat-desc" contenteditable="true">Armador cortando ferro, faíscas visíveis (impacto visual forte). "Corta ferro, aço e materiais de revestimento com precisão."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 5</span>
+              <div class="beat-label" contenteditable="true">Betoneira / Argamassadeira</div>
+              <p class="beat-desc" contenteditable="true">"Mistura concreto, argamassa e outros compostos com consistência controlada. A base de toda alvenaria e revestimento."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 6</span>
+              <div class="beat-label" contenteditable="true">Vibrador de Concreto (Mangote)</div>
+              <p class="beat-desc" contenteditable="true">Durante concretagem. "Elimina bolhas de ar da mistura — garante estrutura mais densa, resistente e durável."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 7</span>
+              <div class="beat-label" contenteditable="true">Dobradeira / Alicate de Armador</div>
+              <p class="beat-desc" contenteditable="true">Close nas mãos dobrando o ferro. "O ferro não chega pronto — é cortado e dobrado no canteiro, de acordo com o projeto estrutural."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 8</span>
+              <div class="beat-label" contenteditable="true">CTA — Encerramento</div>
+              <p class="beat-desc" contenteditable="true">"Essas são algumas das ferramentas que estão construindo o Pátio Friburgo todos os dias. Salva esse carrossel e acompanha a obra aqui."</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Por trás de cada viga erguida, cada parede nivelada e cada detalhe executado com precisão — existe uma ferramenta certa sendo usada da forma certa. Arrasta e conhece o que está na mão de quem faz isso acontecer. #PátioFriburgo #MSBConstrutora #ConstruçãoCivil #FerramentasDeObra #Engenharia</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Salva esse post. E comenta qual ferramenta você não conhecia.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Sexta · Reel · 35–42s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Papo de Pedreiro — "Rotina de Quem Chega às 6h"</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Descontraído</span><span class="tag brick" contenteditable="true">Gleyci</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">Área de trabalho do profissional</span></div>
+          <div><b>Protagonistas</b><span contenteditable="true">Gleyci + profissional de campo</span></div>
+          <div><b>Tom</b><span contenteditable="true">Informal, autêntico, sem script</span></div>
+          <div><b>Atenção</b><span contenteditable="true">Não corrigir o vocabulário do profissional</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–4s</span>
+              <div class="beat-label" contenteditable="true">Abertura — close nas mãos</div>
+              <p class="beat-desc" contenteditable="true">Close extremo nas mãos trabalhando, sem revelar o rosto ainda. Texto: "Tem gente que chega aqui antes do sol nascer." Sem trilha, só som ambiente.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">4–7s</span>
+              <div class="beat-label" contenteditable="true">Entrada da Gleyci</div>
+              <div class="line-fala" contenteditable="true">"[Nome do profissional]! Posso te perguntar uma coisa?"</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">7–10s</span>
+              <div class="beat-label" contenteditable="true">Revelar o profissional</div>
+              <p class="beat-desc" contenteditable="true">Câmera gira pra frente. Texto: "[Nome] · [Função] · [X] anos de obra".</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">10–12s</span>
+              <div class="beat-label" contenteditable="true">A pergunta</div>
+              <div class="line-fala" contenteditable="true">"Como é o seu dia aqui — do começo ao fim?"</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">12–34s</span>
+              <div class="beat-label" contenteditable="true">Resposta livre</div>
+              <p class="beat-desc" contenteditable="true">Profissional fala sem script — horário de chegada, o que faz primeiro, o que é difícil, o que gosta. Deixar fluir, não cortar palavras coloquiais.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">34–38s</span>
+              <div class="beat-label" contenteditable="true">Reação da Gleyci</div>
+              <div class="line-fala" contenteditable="true">"É o [nome], aqui no canteiro do Pátio Friburgo. Toda semana tem uma história diferente aqui."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">38–42s</span>
+              <div class="beat-label" contenteditable="true">Encerramento</div>
+              <p class="beat-desc" contenteditable="true">"Papo de Pedreiro · @msbconstrutoranf"</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">[Nome do profissional] chega no canteiro antes das seis. Enquanto a maioria ainda está dormindo, ele já está resolvendo. Essa é a rotina de quem constrói o Pátio Friburgo — e que raramente alguém para para ouvir. #PátioFriburgo #MSBConstrutora #PapoDePedreiro #ConstruçãoCivil #NovaFriburgo</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Marca alguém que trabalha em obra e vai se identificar com isso.</span></span>
+          </div>
+        </details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar post nesta semana</button>
+
+    <div class="stories">
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+
+  <!-- ===================== SEMANA 3 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <span class="week-num" contenteditable="true">SEMANA 3</span>
+      <span class="week-title" contenteditable="true">Técnico + Bastidores Reais</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Segunda · Reel · 40–45s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Papo de Obra — Ep. 13 · Corte e Dobra de Ferro</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Técnico</span><span class="tag brick" contenteditable="true">Gleyci</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">Área dos armadores</span></div>
+          <div><b>Protagonistas</b><span contenteditable="true">Gleyci + Armador/Engenheiro</span></div>
+          <div><b>Destaque visual</b><span contenteditable="true">Faíscas do corte + câmera lenta 120fps</span></div>
+          <div><b>Melhor luz</b><span contenteditable="true">Qualquer luz · fundo levemente escuro</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–3s</span>
+              <div class="beat-label" contenteditable="true">Vinheta</div>
+              <p class="beat-desc" contenteditable="true">"PAPO DE OBRA · EP. 13 — Corte e Dobra de Ferro"</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">3–8s</span>
+              <div class="beat-label" contenteditable="true">Insert de impacto — câmera lenta</div>
+              <p class="beat-desc" contenteditable="true">Câmera lenta 120fps, close no corte do ferro, faíscas — gancho visual do vídeo inteiro. Sem texto, sem fala.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">8–13s</span>
+              <div class="beat-label" contenteditable="true">Entrada da Gleyci</div>
+              <div class="line-fala" contenteditable="true">"O ferro que vai dentro do concreto não chega aqui pronto. Cada barra é cortada e dobrada no canteiro, de acordo com o projeto."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">13–15s</span>
+              <div class="beat-label" contenteditable="true">Entrada do especialista</div>
+              <p class="beat-desc" contenteditable="true">Texto: "[Nome] · Armador/Engenheiro · MSB Construtora"</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">15–36s</span>
+              <div class="beat-label" contenteditable="true">Explicação + inserts câmera lenta</div>
+              <div class="line-fala" contenteditable="true">"Cada barra de ferro tem um gabarito — comprimento, ângulo de cada dobra, espaçamento. A gente não dobra no olho. Um erro aqui compromete a resistência da estrutura inteira."</div>
+              <p class="beat-desc" contenteditable="true">Gleyci reage: "Ou seja — tem projeto até dentro do ferro. Nada aqui é improviso."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">36–42s</span>
+              <div class="beat-label" contenteditable="true">Fechamento + CTA</div>
+              <div class="line-fala" contenteditable="true">"Toda segunda tem mais um episódio do Papo de Obra. Comenta qual parte da construção você quer entender a seguir."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">42–45s</span>
+              <div class="beat-label" contenteditable="true">Encerramento</div>
+              <p class="beat-desc" contenteditable="true">"Papo de Obra · Ep. 13 · @msbconstrutoranf"</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">O ferro que sustenta o Pátio Friburgo não chega pronto da fábrica. Cada barra é cortada e dobrada no canteiro — com medida exata, ângulo calculado e técnica que a maioria das pessoas nunca vai ver de perto. Episódio 13 do Papo de Obra. #PapoDeObra #MSBConstrutora #PátioFriburgo #Armação #ConstruçãoCivil #Engenharia</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Salva esse vídeo. E ativa o sino pra não perder o próximo episódio.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quarta · Post Único</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Espiadinha na Obra — O que Avançou Essa Semana</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Atualização</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Objetivo</b><span contenteditable="true">Mostrar de forma simples o que avançou</span></div>
+          <div><b>Foto ideal</b><span contenteditable="true">Área que mudou visivelmente vs. semana anterior — celular ok</span></div>
+          <div><b>Texto na imagem</b><span contenteditable="true">Badge "ESPIADINHA NA OBRA" em laranja MSB</span></div>
+          <div><b>Produção</b><span contenteditable="true">Sem produção elaborada</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Foto única</span>
+              <div class="beat-label" contenteditable="true">Briefing fotográfico</div>
+              <p class="beat-desc" contenteditable="true">Plano médio ou aberto, mostrando contexto. Não precisa ser close técnico — a autenticidade é o ponto.</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Semana [número]. Olha o que aconteceu aqui. [Descrição simples e direta do que avançou — 2 frases no máximo]. Toda semana a obra dá um passo. E a gente documenta cada um. #EspiadinhaNaObra #PátioFriburgo #MSBConstrutora #NovaFriburgo</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Ativa o sino — toda semana tem update da obra.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Sexta · Reel · 30–38s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Reunião na Obra — Decisão Técnica em Tempo Real</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Bastidores</span><span class="tag brick" contenteditable="true">Gleyci opcional</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">Canteiro — mesa improvisada</span></div>
+          <div><b>Protagonistas</b><span contenteditable="true">Engenheiro + Encarregado + Gleyci (opcional)</span></div>
+          <div><b>Tom</b><span contenteditable="true">Documental · câmera observa</span></div>
+          <div><b>Atenção</b><span contenteditable="true">Só gravar se a reunião tiver conteúdo real — não encenar</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–3s</span>
+              <div class="beat-label" contenteditable="true">Abertura — texto na tela</div>
+              <p class="beat-desc" contenteditable="true">Reunião já em andamento quando a câmera começa, a 3-4m de distância. Texto: "Todo dia, decisões assim determinam como o shopping vai ficar." Sem música, só som ambiente.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">3–20s</span>
+              <div class="beat-label" contenteditable="true">A reunião acontece</div>
+              <p class="beat-desc" contenteditable="true">Câmera documental — ninguém precisa olhar pra câmera, conversa real. Legenda discreta explica o que está sendo decidido. Fala do engenheiro não roteirizada.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">20–28s</span>
+              <div class="beat-label" contenteditable="true">A decisão é tomada</div>
+              <p class="beat-desc" contenteditable="true">Close nos rostos confirmando. Texto: "Decisão tomada. A obra continua."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">28–35s</span>
+              <div class="beat-label" contenteditable="true">Encerramento — Gleyci opcional</div>
+              <div class="line-fala" contenteditable="true">"É assim todo dia. Decisão em cima de decisão — cada uma impacta o que você vai ver quando o Pátio Friburgo abrir."</div>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Antes de qualquer parede subir, existe uma conversa técnica que determina como ela vai ser. Esse é o tipo de decisão que acontece todos os dias no canteiro do Pátio Friburgo. Nem sempre aparece nos vídeos. Mas é o que faz a diferença. #PátioFriburgo #MSBConstrutora #BastidoresDaObra #Engenharia #NovaFriburgo</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Salva esse vídeo. É raro ver esse nível de bastidor numa construtora.</span></span>
+          </div>
+        </details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar post nesta semana</button>
+
+    <div class="stories">
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+
+  <!-- ===================== SEMANA 4 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <span class="week-num" contenteditable="true">SEMANA 4</span>
+      <span class="week-title" contenteditable="true">Balanço, Equipe e Encerramento</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Segunda · Reel · 40–48s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Na Obra com a Gleyci — Compilação do Mês</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Institucional</span><span class="tag brick" contenteditable="true">Gleyci + Drone</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Material</b><span contenteditable="true">Clips das 3 semanas anteriores + gravação nova</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">Gleyci — narração nova + inserts do mês</span></div>
+          <div><b>Tom</b><span contenteditable="true">Balanço pessoal · reflexivo · antecipação</span></div>
+          <div><b>Câmera nova</b><span contenteditable="true">Gravar Gleyci na obra no último dia do mês</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–4s</span>
+              <div class="beat-label" contenteditable="true">Abertura — Gleyci na obra</div>
+              <div class="line-fala" contenteditable="true">"Último dia do mês. Você vai ver o que mudou aqui — de um mês pra cá."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">4–26s</span>
+              <div class="beat-label" contenteditable="true">Compilação do mês — clips</div>
+              <p class="beat-desc" contenteditable="true">Montagem rápida dos melhores planos, 2-4s cada, alternando obra/equipe/detalhes/Gleyci. Inserir plano de drone do mês como separador. Legendas discretas identificando cada momento.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">26–38s</span>
+              <div class="beat-label" contenteditable="true">Gleyci fecha o mês</div>
+              <div class="line-fala" contenteditable="true">"Um mês inteiro de obra. Cada semana, um avanço. No mês que vem, a gente acompanha [próxima fase]. Ativa o sino pra não perder."</div>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">38–45s</span>
+              <div class="beat-label" contenteditable="true">Plano final drone + encerramento</div>
+              <p class="beat-desc" contenteditable="true">Plano aéreo final, 4s estático. Texto: "Na Obra com a Gleyci · [Mês] · @msbconstrutoranf".</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">Um mês de Pátio Friburgo em 45 segundos. A Gleyci foi lá toda semana. Papo de Obra, bastidores, decisões técnicas, a equipe que constrói isso tudo — e uma obra que avançou mais do que parece de fora. Obrigado por acompanhar. #PátioFriburgo #MSBConstrutora #NaObraComAGleyci #NovaFriburgo #ResumoDoMês</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Salva esse vídeo. Quando o shopping abrir, você vai querer lembrar desse momento.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quarta · Carrossel · 4 slides</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Profissionais da Construção — [Nome do Mês]</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Humanização</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Formato</b><span contenteditable="true">Carrossel 4 slides</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">Profissional do mês</span></div>
+          <div><b>Tom</b><span contenteditable="true">Fotografia sóbria, sem filtro exagerado</span></div>
+          <div><b>Fonte</b><span contenteditable="true">Frase real dita no Papo de Pedreiro</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 1</span>
+              <div class="beat-label" contenteditable="true">Capa — Foto do profissional</div>
+              <p class="beat-desc" contenteditable="true">Foto em ação ou olhando pra câmera, obra ao fundo. Nome em tipografia bold branca, função em laranja MSB.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 2</span>
+              <div class="beat-label" contenteditable="true">A trajetória</div>
+              <p class="beat-desc" contenteditable="true">"[X] anos de canteiro. Já construiu [tipos de obra]. Agora está no maior projeto da Região Serrana."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 3</span>
+              <div class="beat-label" contenteditable="true">Uma frase dele</div>
+              <p class="beat-desc" contenteditable="true">Fundo escuro, frase real entre aspas em tipografia grande. Ex: "Quando esse shopping abrir, eu vou trazer minha família pra mostrar que eu ajudei a construir isso aqui."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">Slide 4</span>
+              <div class="beat-label" contenteditable="true">Encerramento</div>
+              <p class="beat-desc" contenteditable="true">"São [X] profissionais construindo o Pátio Friburgo. Cada um com uma história. Todos com o mesmo objetivo." + @msbconstrutoranf.</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">[Nome do profissional] tem [X] anos de canteiro. Já construiu [mencionar obras]. Agora está aqui — no Pátio Friburgo — deixando mais uma marca na cidade. Toda obra tem gente assim. A MSB tem orgulho de ter esse time. #ProfissionaisDaConstrução #MSBConstrutora #PátioFriburgo #ConstruçãoCivil #NovaFriburgo</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Marca alguém que trabalha em obra e merece esse reconhecimento.</span></span>
+          </div>
+        </details>
+      </div>
+
+      <div class="card video" data-unit="card" style="border-left-color:var(--brick); background:var(--card-brick);">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Sexta · Reel Cinematográfico · 35–42s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Resumo do Mês — Pátio Friburgo em Imagens</div>
+          <div class="tags"><span class="tag brick" contenteditable="true">Fechamento do mês</span><span class="tag gold" contenteditable="true">Drone</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Material</b><span contenteditable="true">Melhores planos do mês · drone obrigatório</span></div>
+          <div><b>Protagonistas</b><span contenteditable="true">Zero — só imagens e texto</span></div>
+          <div><b>Tom</b><span contenteditable="true">Cinematográfico, grandioso, arquivo histórico</span></div>
+          <div><b>Padrão</b><span contenteditable="true">Mesmo formato todo mês — vira série reconhecível</span></div>
+        </div>
+        <details open>
+          <summary>Roteiro completo</summary>
+          <div class="script">
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">0–3s</span>
+              <div class="beat-label" contenteditable="true">Abertura — fundo preto</div>
+              <p class="beat-desc" contenteditable="true">Silêncio 1s, depois texto aparece devagar: "Pátio Friburgo · [Mês] [Ano]". Trilha épica e crescente entra junto — mesma trilha todo mês, vira identidade sonora.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">3–10s</span>
+              <div class="beat-label" contenteditable="true">Plano de drone — abertura épica</div>
+              <p class="beat-desc" contenteditable="true">Melhor plano de drone do mês, altitude alta, câmera lenta se possível. 7s de drone puro, sem texto.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">10–28s</span>
+              <div class="beat-label" contenteditable="true">Montagem — os melhores planos</div>
+              <p class="beat-desc" contenteditable="true">Alternar drone, câmera lenta em detalhe, equipe, estrutura, Gleyci sem fala. Cortes a cada 3-4s sincronizados com a trilha. Texto discreto a cada 6-8s marcando o marco do mês.</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">28–34s</span>
+              <div class="beat-label" contenteditable="true">Plano final — subida revelação</div>
+              <p class="beat-desc" contenteditable="true">Drone sobe de 30m pra 80m, cidade se expande — plano mais grandioso. Texto: "Construímos o que Nova Friburgo vai se tornar."</p>
+            </div>
+            <div class="beat">
+              <button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+              <span class="beat-time" contenteditable="true">34–40s</span>
+              <div class="beat-label" contenteditable="true">Encerramento</div>
+              <p class="beat-desc" contenteditable="true">Drone estático, hold 3s. "MSB Construtora · Projetos e Construções" + @msbconstrutoranf.</p>
+            </div>
+          </div>
+          <button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+          <div class="copy-block">
+            <b>Copy da legenda</b>
+            <span class="copy-text" contenteditable="true">[Mês]. Em imagens. Mais um mês construindo o Pátio Friburgo — e Nova Friburgo um pouco mais perto do que vai se tornar. Se você acompanha desde o início: obrigado. Você está vendo a história ser feita. #PátioFriburgo #MSBConstrutora #ResumoDoMês #NovaFriburgo #EngenhariaQueTransformaCidades</span>
+            <span class="cta"><b>CTA:</b> <span contenteditable="true">Salva esse vídeo. Quando o shopping abrir, esse arquivo vai ter um valor enorme.</span></span>
+          </div>
+        </details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar post nesta semana</button>
+
+    <div class="stories">
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+  </div>
+
+  <div class="add-week-wrap no-print">
+    <button class="add-week" onclick="addWeek()">+ Adicionar nova semana / mês seguinte</button>
+  </div>
+
+  <!-- ===================== CHECKLIST ===================== -->
+  <div class="checklist">
+    <h2 contenteditable="true">Checklist de Produção do Mês</h2>
+    <div class="sub">Marque conforme for resolvendo — fica salvo compartilhado.</div>
+    <div class="check-grid" id="checklist">
+      <div class="check-item"><input type="checkbox" id="c1"><label for="c1" contenteditable="true">Agendar voo de drone — 2 datas no mês</label></div>
+      <div class="check-item"><input type="checkbox" id="c2"><label for="c2" contenteditable="true">Confirmar engenheiro para Papo de Obra Ep.12 e Ep.13</label></div>
+      <div class="check-item"><input type="checkbox" id="c3"><label for="c3" contenteditable="true">Selecionar profissional para Papo de Pedreiro e Profissionais da Construção</label></div>
+      <div class="check-item"><input type="checkbox" id="c4"><label for="c4" contenteditable="true">Reservar gimbal estabilizado para gravações da Gleyci</label></div>
+      <div class="check-item"><input type="checkbox" id="c5"><label for="c5" contenteditable="true">Fotografar detalhe técnico para post de quarta — Sem. 1</label></div>
+      <div class="check-item"><input type="checkbox" id="c6"><label for="c6" contenteditable="true">Capturar "Espiadinha na Obra" no meio da Sem. 3</label></div>
+      <div class="check-item"><input type="checkbox" id="c7"><label for="c7" contenteditable="true">Guardar melhores clips do mês para Resumo — Sem. 4</label></div>
+      <div class="check-item"><input type="checkbox" id="c8"><label for="c8" contenteditable="true">Gravar Gleyci na obra no último dia do mês — compilação</label></div>
+      <div class="check-item"><input type="checkbox" id="c9"><label for="c9" contenteditable="true">Confirmar capacetes e uniformes MSB para todas as gravações</label></div>
+      <div class="check-item"><input type="checkbox" id="c10"><label for="c10" contenteditable="true">Subir legendas automáticas em todos os Reels antes de publicar</label></div>
+      <div class="check-item"><input type="checkbox" id="c11"><label for="c11" contenteditable="true">Atualizar a bio do Instagram com a tagline definida</label></div>
+      <div class="check-item"><input type="checkbox" id="c12"><label for="c12" contenteditable="true">Criar destaques: A Obra · A Equipe · Papo de Obra · MSB</label></div>
+    </div>
+    <button class="add-check no-print" onclick="addCheck(this)">+ Adicionar item</button>
+  </div>
+
+  <footer>MSB Construtora · Gerenciador de Conteúdo · atualizado conforme novo material chega</footer>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <p id="modalMsg"></p>
+    <div class="modal-actions">
+      <button id="modalCancel" type="button">Cancelar</button>
+      <button id="modalOk" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="historyOverlay">
+  <div class="modal-box history-box">
+    <h3>Histórico de versões</h3>
+    <div id="historyList" class="history-list">Carregando…</div>
+    <div class="modal-actions"><button id="historyClose" type="button">Fechar</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  var API_BASE = '/api/msb';
+  var checkCounter = 100;
+  var currentVersionId = null;
+
+  function debounce(fn, ms){
+    var t;
+    return function(){
+      clearTimeout(t);
+      t = setTimeout(fn, ms);
+    };
+  }
+
+  // ---- Custom confirm / toast (kept for a consistent look instead of the browser's native dialogs) ----
+  var pendingConfirm = null;
+  function customConfirm(msg, onYes){
+    document.getElementById('modalMsg').textContent = msg;
+    document.getElementById('modalOverlay').classList.add('show');
+    pendingConfirm = onYes;
+  }
+  document.getElementById('modalCancel').onclick = function(){
+    document.getElementById('modalOverlay').classList.remove('show');
+    pendingConfirm = null;
+  };
+  document.getElementById('modalOk').onclick = function(){
+    document.getElementById('modalOverlay').classList.remove('show');
+    var fn = pendingConfirm; pendingConfirm = null;
+    if (fn) fn();
+  };
+  var toastTimer;
+  function toast(msg){
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 6000);
+  }
+
+  // ---- Calendário ----
+  var calendarMonth = null;
+  var calendarUnits = [];
+
+  function collectUnits(){
+    var units = [];
+    document.querySelectorAll('#app [data-unit="card"], #app [data-unit="story"]').forEach(function(el){
+      var dateInput = el.querySelector('.post-date');
+      var isCard = el.getAttribute('data-unit') === 'card';
+      var titleEl = isCard ? el.querySelector('.card-title') : el.querySelector('h4');
+      units.push({
+        date: dateInput ? dateInput.value : '',
+        title: titleEl ? titleEl.textContent.trim() : '(sem titulo)',
+        type: isCard ? 'video' : 'story',
+        el: el
+      });
+    });
+    return units;
+  }
+
+  function toggleCalendar(){
+    var el = document.getElementById('calendarView');
+    var showing = el.classList.toggle('show');
+    if (showing){
+      if (!calendarMonth){
+        var dated = collectUnits().filter(function(u){ return u.date; }).sort(function(a,b){ return a.date.localeCompare(b.date); });
+        calendarMonth = dated.length ? new Date(dated[0].date + 'T00:00:00') : new Date();
+        calendarMonth.setDate(1);
+      }
+      renderCalendar();
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  function shiftMonth(delta){
+    calendarMonth.setMonth(calendarMonth.getMonth() + delta);
+    renderCalendar();
+  }
+
+  function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function renderCalendar(){
+    calendarUnits = collectUnits();
+    calendarUnits.forEach(function(u, i){ u.idx = i; });
+    var byDate = {};
+    calendarUnits.forEach(function(u){
+      if (u.date) (byDate[u.date] = byDate[u.date] || []).push(u);
+    });
+
+    var y = calendarMonth.getFullYear(), m = calendarMonth.getMonth();
+    var monthNames = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    document.getElementById('calMonthLabel').textContent = monthNames[m] + ' ' + y;
+
+    var firstOfMonth = new Date(y, m, 1);
+    var startWeekday = (firstOfMonth.getDay() + 6) % 7;
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+    var totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+
+    function chipHTML(u){
+      return '<div class="cal-chip cal-' + u.type + '" draggable="true" data-idx="' + u.idx + '" ' +
+        'onclick="jumpToPost(' + u.idx + ')" ondragstart="dragStart(event,' + u.idx + ')" ondragend="dragEnd(event)" ' +
+        'title="' + u.title.replace(/"/g, '&quot;') + ' — arraste pra mudar de dia">' + u.title + '</div>';
+    }
+
+    var html = '';
+    var d = new Date(y, m, 1 - startWeekday);
+    for (var i = 0; i < totalCells; i++){
+      var inMonth = d.getMonth() === m;
+      var iso = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+      var dayUnits = byDate[iso] || [];
+      html += '<div class="cal-cell' + (inMonth ? '' : ' cal-out') + '" data-date="' + iso + '" ' +
+        'ondragover="cellDragOver(event)" ondragleave="cellDragLeave(event)" ondrop="dropOnCell(event,\'' + iso + '\')">' +
+        '<div class="cal-daynum">' + d.getDate() + '</div>' +
+        dayUnits.map(chipHTML).join('') +
+        '</div>';
+      d.setDate(d.getDate() + 1);
+    }
+    document.getElementById('calGrid').innerHTML = html;
+
+    var undated = calendarUnits.filter(function(u){ return !u.date; });
+    var undEl = document.getElementById('calUndated');
+    undEl.setAttribute('ondragover', 'cellDragOver(event)');
+    undEl.setAttribute('ondragleave', 'cellDragLeave(event)');
+    undEl.setAttribute('ondrop', 'dropOnUndated(event)');
+    if (!undated.length){
+      undEl.innerHTML = '<div class="cal-undated-label">Sem data ainda — arraste um post pra cá pra tirar a data.</div>';
+    } else {
+      undEl.innerHTML = '<div class="cal-undated-label">Sem data ainda (' + undated.length + ') — arraste pro grid pra agendar:</div>' +
+        undated.map(chipHTML).join('');
+    }
+  }
+
+  var dragIdx = null;
+  function dragStart(ev, idx){
+    dragIdx = idx;
+    ev.dataTransfer.effectAllowed = 'move';
+    ev.target.classList.add('dragging');
+  }
+  function dragEnd(ev){
+    ev.target.classList.remove('dragging');
+    dragIdx = null;
+  }
+  function cellDragOver(ev){
+    ev.preventDefault();
+    ev.currentTarget.classList.add('drag-over');
+  }
+  function cellDragLeave(ev){
+    ev.currentTarget.classList.remove('drag-over');
+  }
+  function dropOnCell(ev, iso){
+    ev.preventDefault();
+    ev.currentTarget.classList.remove('drag-over');
+    if (dragIdx === null) return;
+    var u = calendarUnits[dragIdx];
+    if (!u) return;
+    u.el.querySelector('.post-date').value = iso;
+    dragIdx = null;
+    saveDebounced();
+    renderCalendar();
+    var dd = iso.split('-');
+    toast('Movido para ' + dd[2] + '/' + dd[1] + '/' + dd[0] + '.');
+  }
+  function dropOnUndated(ev){
+    ev.preventDefault();
+    ev.currentTarget.classList.remove('drag-over');
+    if (dragIdx === null) return;
+    var u = calendarUnits[dragIdx];
+    if (!u) return;
+    u.el.querySelector('.post-date').value = '';
+    dragIdx = null;
+    saveDebounced();
+    renderCalendar();
+    toast('Data removida — post voltou pra "sem data".');
+  }
+
+  function jumpToPost(idx){
+    var u = calendarUnits[idx];
+    if (!u) return;
+    document.getElementById('calendarView').classList.remove('show');
+    u.el.scrollIntoView({behavior:'smooth', block:'center'});
+    u.el.classList.add('flash-highlight');
+    setTimeout(function(){ u.el.classList.remove('flash-highlight'); }, 1700);
+  }
+
+  function markSaved(id){
+    var el = document.getElementById('saveState');
+    el.textContent = 'salvo · ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    el.classList.add('saved');
+    if (id) currentVersionId = id;
+  }
+  function markSaving(){
+    document.getElementById('saveState').textContent = 'salvando…';
+    document.getElementById('saveState').classList.remove('saved');
+  }
+
+  function save(){
+    markSaving();
+    fetch(API_BASE, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({html: document.getElementById('app').innerHTML})
+    })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if (res && res.ok) markSaved(res.id);
+        else toast('Erro ao salvar: ' + ((res && res.error) || 'desconhecido'));
+      })
+      .catch(function(){
+        toast('Sem conexão — a última alteração pode não ter sido salva. Tente de novo em instantes.');
+      });
+  }
+  var saveDebounced = debounce(save, 1200);
+
+  function restore(){
+    document.getElementById('saveState').textContent = 'carregando…';
+    fetch(API_BASE)
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if (res && res.html){
+          document.getElementById('app').innerHTML = res.html;
+          currentVersionId = res.id;
+          document.getElementById('saveState').textContent =
+            'versão de ' + new Date(res.created_at).toLocaleString('pt-BR');
+          document.getElementById('saveState').classList.add('saved');
+        } else {
+          document.getElementById('saveState').textContent = 'nenhuma versão salva ainda — comece editando';
+        }
+        wireChecklist();
+      })
+      .catch(function(){
+        document.getElementById('saveState').textContent = 'erro ao carregar — verifique sua conexão e recarregue a página';
+      });
+  }
+
+  // ---- Histórico de versões ----
+  function openHistory(){
+    document.getElementById('historyOverlay').classList.add('show');
+    var list = document.getElementById('historyList');
+    list.textContent = 'Carregando…';
+    fetch(API_BASE + '/history')
+      .then(function(r){ return r.json(); })
+      .then(function(items){
+        if (!items || !items.length){ list.textContent = 'Nenhuma versão salva ainda.'; return; }
+        var html = '';
+        items.forEach(function(v){
+          var d = new Date(v.created_at).toLocaleString('pt-BR');
+          var isCurrent = v.id === currentVersionId;
+          html += '<div class="history-item"><span>' + d + (isCurrent ? ' <em>· versão atual</em>' : '') + '</span>' +
+            (isCurrent ? '' : '<button onclick="previewVersion(' + v.id + ')" type="button">Ver / Restaurar</button>') +
+            '</div>';
+        });
+        list.innerHTML = html;
+      })
+      .catch(function(){ list.textContent = 'Erro ao carregar o histórico.'; });
+  }
+  document.getElementById('historyClose').onclick = function(){
+    document.getElementById('historyOverlay').classList.remove('show');
+  };
+  function previewVersion(id){
+    fetch(API_BASE + '/history/' + id)
+      .then(function(r){ return r.json(); })
+      .then(function(v){
+        if (!v || !v.html){ toast('Não consegui carregar essa versão.'); return; }
+        document.getElementById('historyOverlay').classList.remove('show');
+        var when = new Date(v.created_at).toLocaleString('pt-BR');
+        customConfirm(
+          'Restaurar a versão de ' + when + '? Ela vira a versão mais recente — nada se perde, a versão atual continua guardada no histórico.',
+          function(){
+            document.getElementById('app').innerHTML = v.html;
+            wireChecklist();
+            save();
+            toast('Versão de ' + when + ' restaurada.');
+          }
+        );
+      })
+      .catch(function(){ toast('Erro ao carregar essa versão.'); });
+  }
+
+  function wireChecklist(){
+    document.querySelectorAll('#checklist input[type=checkbox]').forEach(function(box){
+      box.onchange = function(){
+        box.closest('.check-item').classList.toggle('done', box.checked);
+        saveDebounced();
+      };
+      if (box.checked) box.closest('.check-item').classList.add('done');
+    });
+  }
+
+  // ---- Add / remove blocks ----
+  function addBeat(btn){
+    var script = btn.previousElementSibling;
+    var last = script.querySelector('.beat:last-child');
+    var clone = last ? last.cloneNode(true) : null;
+    var div = document.createElement('div');
+    div.className = 'beat';
+    div.innerHTML = '<button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>' +
+      '<span class="beat-time" contenteditable="true">0–0s</span>' +
+      '<div class="beat-label" contenteditable="true">Novo bloco</div>' +
+      '<div class="beat-cam" contenteditable="true">Direção de câmera...</div>' +
+      '<p class="beat-desc" contenteditable="true">Descrição da cena...</p>';
+    script.appendChild(div);
+    div.querySelector('.beat-label').focus();
+    saveDebounced();
+  }
+  function delBeat(btn){
+    var beat = btn.closest('.beat');
+    var script = beat.parentElement;
+    function doRemove(){ beat.remove(); saveDebounced(); }
+    if (script.querySelectorAll('.beat').length <= 1){
+      customConfirm('Remover o último bloco deste roteiro?', doRemove);
+    } else {
+      doRemove();
+    }
+  }
+
+  function addStory(el){
+    var row = el.closest('.stories');
+    var div = document.createElement('div');
+    div.className = 'story';
+    div.setAttribute('data-unit','story');
+    div.innerHTML = '<button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>' +
+      '<div class="card-day" contenteditable="true">Dia · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">' +
+      '<h4 contenteditable="true">Novo story</h4>' +
+      '<p contenteditable="true">Descrição do story...</p>';
+    row.insertBefore(div, el);
+    div.querySelector('h4').focus();
+    saveDebounced();
+  }
+  function delStory(btn){
+    customConfirm('Remover este story?', function(){
+      btn.closest('.story').remove();
+      saveDebounced();
+    });
+  }
+
+  function addVideo(btn){
+    var grid = btn.previousElementSibling;
+    var div = document.createElement('div');
+    div.className = 'card video';
+    div.setAttribute('data-unit','card');
+    div.innerHTML = '<button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>' +
+      '<button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>' +
+      '<div class="card-head">' +
+        '<div class="card-day" contenteditable="true">Dia · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">' +
+        '<div class="card-title" contenteditable="true">Novo vídeo</div>' +
+        '<div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>' +
+      '</div>' +
+      '<div class="meta">' +
+        '<div><b>Local</b><span contenteditable="true">—</span></div>' +
+        '<div><b>Protagonista</b><span contenteditable="true">—</span></div>' +
+        '<div><b>Câmera</b><span contenteditable="true">—</span></div>' +
+        '<div><b>Observação</b><span contenteditable="true">—</span></div>' +
+      '</div>' +
+      '<details open><summary>Roteiro completo</summary><div class="script">' +
+        '<div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>' +
+        '<span class="beat-time" contenteditable="true">0–0s</span>' +
+        '<div class="beat-label" contenteditable="true">Abertura</div>' +
+        '<p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>' +
+      '</div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>' +
+      '<div class="copy-block"><b>Copy da legenda</b>' +
+        '<span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>' +
+        '<span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>' +
+      '</div></details>';
+    grid.appendChild(div);
+    div.querySelector('.card-title').focus();
+    saveDebounced();
+  }
+  function delCard(btn){
+    customConfirm('Remover este card inteiro?', function(){
+      btn.closest('.card').remove();
+      saveDebounced();
+    });
+  }
+
+  function addCheck(btn){
+    checkCounter++;
+    var id = 'cx' + checkCounter;
+    var div = document.createElement('div');
+    div.className = 'check-item';
+    div.innerHTML = '<input type="checkbox" id="' + id + '"><label for="' + id + '" contenteditable="true">Novo item</label>';
+    btn.parentElement.insertBefore(div, btn);
+    wireChecklist();
+    div.querySelector('label').focus();
+    saveDebounced();
+  }
+
+  function addWeek(){
+    var weeks = document.getElementById('weeks');
+    var n = weeks.querySelectorAll('.week').length + 1;
+    var div = document.createElement('div');
+    div.className = 'week';
+    div.setAttribute('data-unit','week');
+    div.innerHTML =
+      '<div class="week-head"><span class="week-num" contenteditable="true">SEMANA ' + n + '</span>' +
+      '<span class="week-title" contenteditable="true">Novo tema da semana</span></div>' +
+      '<div class="week-rule"></div>' +
+      '<div class="day-grid"></div>' +
+      '<button class="add-video no-print" onclick="addVideo(this)">+ Adicionar vídeo nesta semana</button>' +
+      '<div class="stories"><div class="add-story no-print" onclick="addStory(this)">+ Story</div></div>';
+    weeks.appendChild(div);
+    div.scrollIntoView({behavior:'smooth', block:'start'});
+    saveDebounced();
+  }
+
+  // ---- Print (native window.print — this page is not sandboxed, unlike the earlier artifact version) ----
+  function printAll(){
+    window.print();
+  }
+  function printOne(btn){
+    document.querySelectorAll('.print-target').forEach(function(el){ el.classList.remove('print-target'); });
+    var card = btn.closest('[data-unit="card"]');
+    var week = btn.closest('[data-unit="week"]');
+    card.classList.add('print-target');
+    week.classList.add('print-target');
+    document.body.classList.add('single-print');
+    window.print();
+  }
+  window.addEventListener('afterprint', function(){
+    document.body.classList.remove('single-print');
+  });
+
+  // ---- Export / Import ----
+  function buildStandalone(){
+    var appHtml = document.getElementById('app').outerHTML;
+    return '<!doctype html><html><head><meta charset="utf-8"><title>' +
+      document.title + '</title>' + document.head.querySelector('style').outerHTML +
+      '</head><body>' + appHtml +
+      '</body></html>';
+  }
+  function downloadFile(content, filename){
+    var blob = new Blob([content], {type:'text/html'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+  function exportHTML(){
+    downloadFile(buildStandalone(), 'msb-conteudo-' + new Date().toISOString().slice(0,10) + '.html');
+    toast('Baixado - essa copia e so um retrato deste momento, nao fica ligada ao historico do site.');
+  }
+  function importHTML(evt){
+    var file = evt.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(reader.result, 'text/html');
+      var importedApp = doc.getElementById('app');
+      if (!importedApp){ toast('Nao encontrei conteudo reconhecivel nesse arquivo.'); return; }
+      customConfirm('Isso vai substituir o conteudo atual - visivel pra todo mundo que abrir o link - pelo deste arquivo. A versao de agora continua guardada no historico. Continuar?', function(){
+        document.getElementById('app').innerHTML = importedApp.innerHTML;
+        wireChecklist();
+        save();
+        toast('Restaurado a partir do arquivo.');
+      });
+    };
+    reader.readAsText(file);
+    evt.target.value = '';
+  }
+
+  // ---- Wire up autosave on any edit ----
+  document.getElementById('app').addEventListener('input', saveDebounced);
+  restore();
+</script>
