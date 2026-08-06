@@ -109,7 +109,13 @@
   .card{ background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow); position:relative; }
   .card.video{ background:var(--card-gold); border-left:3px solid var(--gold); }
   .card-head{padding:14px 40px 12px 18px; border-bottom:1px solid var(--line-soft); position:relative;}
-  .card-day{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-faint);}
+  .card-day{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-faint); display:inline-block;}
+  .post-date{
+    font-family:var(--mono); font-size:10px; color:var(--gold-deep); background:var(--surface-2);
+    border:1px solid var(--line); padding:2px 5px; margin-left:8px; border-radius:2px; cursor:pointer;
+  }
+  .post-date:hover{ border-color:var(--gold-deep); }
+  .post-date:focus{ outline:none; box-shadow:0 0 0 1px var(--gold); }
   .card-title{font-family:var(--serif); font-weight:700; font-size:16.5px; margin:4px 0 8px; text-wrap:balance;}
   .tags{display:flex; gap:6px; flex-wrap:wrap;}
   .tag{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; padding:2px 7px; border:1px solid currentColor;}
@@ -248,6 +254,45 @@
   }
   .history-item button:hover{ border-color:var(--gold-deep); color:var(--gold-deep); }
 
+  /* Calendar view */
+  .calendar-view{
+    display:none; background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:18px 20px 20px; margin-bottom:36px;
+  }
+  .calendar-view.show{ display:block; }
+  .cal-header{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .cal-header button{
+    font-family:var(--mono); font-size:12px; border:1px solid var(--line); background:#fff;
+    color:var(--ink); padding:5px 10px; cursor:pointer;
+  }
+  .cal-header button:hover{ border-color:var(--gold-deep); color:var(--gold-deep); }
+  .cal-header span{ font-family:var(--serif); font-weight:700; font-size:16px; min-width:150px; }
+  .cal-header .cal-close{ margin-left:auto; }
+  .cal-weekdays{
+    display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line);
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--ink-faint); text-align:center; margin-bottom:1px;
+  }
+  .cal-weekdays div{ background:var(--surface-2); padding:6px 0; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .cal-cell{ background:#fff; min-height:78px; padding:4px; display:flex; flex-direction:column; gap:2px; }
+  .cal-cell.cal-out{ background:var(--surface-2); }
+  .cal-cell.cal-out .cal-daynum{ color:var(--ink-faint); opacity:0.5; }
+  .cal-daynum{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-bottom:2px; }
+  .cal-chip{
+    font-size:10px; padding:2px 5px; cursor:pointer; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; border-left:2px solid; line-height:1.5;
+  }
+  .cal-chip.cal-video{ background:var(--card-gold); border-color:var(--gold); color:var(--gold-deep); }
+  .cal-chip.cal-story{ background:var(--card-moss); border-color:var(--moss); color:var(--moss); }
+  .cal-chip:hover{ filter:brightness(0.95); }
+  .cal-undated{ margin-top:14px; }
+  .cal-undated-label{ font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
+  .cal-undated .cal-chip{ display:inline-block; margin:0 6px 6px 0; }
+  @keyframes flashHighlight{ 0%,100%{ box-shadow:0 0 0 0 rgba(168,127,63,0); } 30%{ box-shadow:0 0 0 4px rgba(168,127,63,0.5); } }
+  .flash-highlight{ animation:flashHighlight 1.6s ease; }
+  @media (max-width:640px){ .cal-cell{ min-height:56px; } .cal-chip{ font-size:9px; } }
+
   /* Toast (native alert() is blocked in this sandbox) */
   .toast{
     position:fixed; left:50%; bottom:26px; transform:translate(-50%,16px);
@@ -269,6 +314,7 @@
     details summary{ display:none !important; }
     details > .script{ display:block !important; }
     .add-beat, .add-story, .add-video, .add-week-wrap, .add-check{ display:none !important; }
+    .post-date{ display:none !important; }
     .icon-btn{ display:none !important; }
     a[href]:after{ content:""; }
 
@@ -284,6 +330,7 @@
 <div class="wrap" id="app">
 
   <div class="toolbar no-print">
+    <button onclick="toggleCalendar()">📅 Calendário</button>
     <button onclick="openHistory()">🕘 Histórico</button>
     <button onclick="printAll()">🖨 Imprimir tudo</button>
     <button onclick="exportHTML()">⬇ Baixar cópia</button>
@@ -292,7 +339,21 @@
   </div>
 
   <div class="howto no-print">
-    <b>Como isso funciona:</b> tudo aqui é editável — clique em qualquer texto e altere direto. "+" adiciona blocos, "×" remove. As edições são <b>salvas no servidor e compartilhadas</b> — qualquer pessoa que abrir esse link vê e edita o mesmo conteúdo, em tempo real a cada recarregamento. Nada se perde: toda vez que algo é salvo, uma nova versão fica guardada no <b>🕘 Histórico</b>, então dá pra voltar atrás se alguém editar por engano. Se duas pessoas editarem ao mesmo tempo, a última a salvar prevalece — mas a versão anterior continua no histórico.
+    <b>Como isso funciona:</b> tudo aqui é editável — clique em qualquer texto e altere direto. "+" adiciona blocos, "×" remove. As edições são <b>salvas no servidor e compartilhadas</b> — qualquer pessoa que abrir esse link vê e edita o mesmo conteúdo, em tempo real a cada recarregamento. Nada se perde: toda vez que algo é salvo, uma nova versão fica guardada no <b>🕘 Histórico</b>, então dá pra voltar atrás se alguém editar por engano. Se duas pessoas editarem ao mesmo tempo, a última a salvar prevalece — mas a versão anterior continua no histórico. Cada post tem um campinho de data (ao lado de "Segunda · Reel..." etc.) — preenche pra ele aparecer no <b>📅 Calendário</b>.
+  </div>
+
+  <div class="calendar-view no-print" id="calendarView">
+    <div class="cal-header">
+      <button type="button" onclick="shiftMonth(-1)">←</button>
+      <span id="calMonthLabel">—</span>
+      <button type="button" onclick="shiftMonth(1)">→</button>
+      <button type="button" class="cal-close" onclick="toggleCalendar()">Fechar ×</button>
+    </div>
+    <div class="cal-weekdays">
+      <div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-undated" id="calUndated"></div>
   </div>
 
   <div class="masthead">
@@ -335,7 +396,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Segunda · Reel · 30–35s</div>
+          <div class="card-day" contenteditable="true">Segunda · Reel · 30–35s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Um Casamento Real no Kaylua</div>
           <div class="tags"><span class="tag gold" contenteditable="true">Prova Social</span><span class="tag brick" contenteditable="true">Montagem</span></div>
         </div>
@@ -400,7 +461,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Quinta · Reel · 35–40s</div>
+          <div class="card-day" contenteditable="true">Quinta · Reel · 35–40s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Gleyci apresenta o Chá Revelação</div>
           <div class="tags"><span class="tag gold" contenteditable="true">Oferta</span><span class="tag brick" contenteditable="true">Gleyci</span></div>
         </div>
@@ -466,19 +527,19 @@
     <div class="stories">
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Terça · Story</div>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Bastidores</h4>
         <p contenteditable="true">Gleyci se preparando pra gravação de quinta. Texto: "Gravando o próximo vídeo, chega quinta."</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Quarta · Story</div>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Enquete</h4>
         <p contenteditable="true">"Qual desses combina mais com o seu evento?" — Salão Social vs. Chá Revelação, sticker A/B.</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Sexta · Story</div>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Reforço + CTA</h4>
         <p contenteditable="true">Repost do vídeo do Chá Revelação recém-publicado + sticker de link "Agende sua visita".</p>
       </div>
@@ -499,7 +560,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Segunda · Reel Drone · 25–30s</div>
+          <div class="card-day" contenteditable="true">Segunda · Reel Drone · 25–30s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Teaser Aéreo — O Kaylua Visto de Cima</div>
           <div class="tags"><span class="tag gold" contenteditable="true">Aspiracional</span><span class="tag brick" contenteditable="true">Drone</span></div>
         </div>
@@ -556,7 +617,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Quinta · Reel · 35–40s</div>
+          <div class="card-day" contenteditable="true">Quinta · Reel · 35–40s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Gleyci apresenta a Festa Infantil</div>
           <div class="tags"><span class="tag gold" contenteditable="true">Oferta</span><span class="tag brick" contenteditable="true">Gleyci</span></div>
         </div>
@@ -615,19 +676,19 @@
     <div class="stories">
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Terça · Story</div>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Bastidores</h4>
         <p contenteditable="true">Tela de edição — "cortando as melhores cenas do drone" — teaser do vídeo de segunda.</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Quarta · Story</div>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Caixa de perguntas</h4>
         <p contenteditable="true">"Me pergunta qualquer coisa sobre o espaço" — respostas viram novos stories na sequência.</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Sexta · Story</div>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Reforço + CTA</h4>
         <p contenteditable="true">Repost do vídeo da Festa Infantil + sticker "Agende sua visita".</p>
       </div>
@@ -648,7 +709,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Segunda · Reel híbrido · 30–35s</div>
+          <div class="card-day" contenteditable="true">Segunda · Reel híbrido · 30–35s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Drone Bruto + Detalhe Zé Paixão</div>
           <div class="tags"><span class="tag gold" contenteditable="true">Aspiracional</span><span class="tag brick" contenteditable="true">Drone bruto</span></div>
         </div>
@@ -705,7 +766,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Quinta · Reel · 30–35s</div>
+          <div class="card-day" contenteditable="true">Quinta · Reel · 30–35s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Gleyci apresenta a Seção Book</div>
           <div class="tags"><span class="tag gold" contenteditable="true">Oferta</span><span class="tag brick" contenteditable="true">Gleyci</span></div>
         </div>
@@ -763,19 +824,19 @@
     <div class="stories">
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Terça · Story</div>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Enquete</h4>
         <p contenteditable="true">"Já visitou o Kaylua?" — Sim / Ainda não.</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Quarta · Story</div>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Bastidores</h4>
         <p contenteditable="true">Gleyci se preparando pra gravação no Book, antes da publicação de quinta.</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Sexta · Story</div>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Reforço + CTA</h4>
         <p contenteditable="true">Repost do vídeo da Seção Book + sticker de contato.</p>
       </div>
@@ -796,7 +857,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Segunda · Reel Cinematográfico · 35–40s</div>
+          <div class="card-day" contenteditable="true">Segunda · Reel Cinematográfico · 35–40s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Resumo do Mês — Kaylua em Imagens</div>
           <div class="tags"><span class="tag gold" contenteditable="true">Institucional</span></div>
         </div>
@@ -853,7 +914,7 @@
         <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
         <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
         <div class="card-head">
-          <div class="card-day" contenteditable="true">Quinta · Reel · 40–45s</div>
+          <div class="card-day" contenteditable="true">Quinta · Reel · 40–45s</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
           <div class="card-title" contenteditable="true">Gleyci anuncia o pacote "Casamento"</div>
           <div class="tags"><span class="tag brick" contenteditable="true">Peça mais importante do mês</span><span class="tag gold" contenteditable="true">Gleyci</span></div>
         </div>
@@ -912,19 +973,19 @@
     <div class="stories">
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Terça · Story</div>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Teaser</h4>
         <p contenteditable="true">"Quinta tem novidade grande aqui" — sem revelar o quê.</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Quarta · Story</div>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Bastidores</h4>
         <p contenteditable="true">Preparação do Salão Social para a gravação de quinta.</p>
       </div>
       <div class="story" data-unit="story">
         <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
-        <div class="card-day" contenteditable="true">Sexta · Story</div>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Reforço final</h4>
         <p contenteditable="true">Repost do anúncio "Casamento" + CTA de fechamento do mês. Fixar nos destaques do perfil.</p>
       </div>
@@ -1011,6 +1072,102 @@
     el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 6000);
+  }
+
+  // ---- Calendário ----
+  var calendarMonth = null;
+  var calendarUnits = [];
+
+  function collectUnits(){
+    var units = [];
+    document.querySelectorAll('#app [data-unit="card"], #app [data-unit="story"]').forEach(function(el){
+      var dateInput = el.querySelector('.post-date');
+      var isCard = el.getAttribute('data-unit') === 'card';
+      var titleEl = isCard ? el.querySelector('.card-title') : el.querySelector('h4');
+      units.push({
+        date: dateInput ? dateInput.value : '',
+        title: titleEl ? titleEl.textContent.trim() : '(sem titulo)',
+        type: isCard ? 'video' : 'story',
+        el: el
+      });
+    });
+    return units;
+  }
+
+  function toggleCalendar(){
+    var el = document.getElementById('calendarView');
+    var showing = el.classList.toggle('show');
+    if (showing){
+      if (!calendarMonth){
+        var dated = collectUnits().filter(function(u){ return u.date; }).sort(function(a,b){ return a.date.localeCompare(b.date); });
+        calendarMonth = dated.length ? new Date(dated[0].date + 'T00:00:00') : new Date();
+        calendarMonth.setDate(1);
+      }
+      renderCalendar();
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  function shiftMonth(delta){
+    calendarMonth.setMonth(calendarMonth.getMonth() + delta);
+    renderCalendar();
+  }
+
+  function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function renderCalendar(){
+    calendarUnits = collectUnits();
+    calendarUnits.forEach(function(u, i){ u.idx = i; });
+    var byDate = {};
+    calendarUnits.forEach(function(u){
+      if (u.date) (byDate[u.date] = byDate[u.date] || []).push(u);
+    });
+
+    var y = calendarMonth.getFullYear(), m = calendarMonth.getMonth();
+    var monthNames = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    document.getElementById('calMonthLabel').textContent = monthNames[m] + ' ' + y;
+
+    var firstOfMonth = new Date(y, m, 1);
+    var startWeekday = (firstOfMonth.getDay() + 6) % 7;
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+    var totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+
+    var html = '';
+    var d = new Date(y, m, 1 - startWeekday);
+    for (var i = 0; i < totalCells; i++){
+      var inMonth = d.getMonth() === m;
+      var iso = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+      var dayUnits = byDate[iso] || [];
+      html += '<div class="cal-cell' + (inMonth ? '' : ' cal-out') + '">' +
+        '<div class="cal-daynum">' + d.getDate() + '</div>' +
+        dayUnits.map(function(u){
+          return '<div class="cal-chip cal-' + u.type + '" onclick="jumpToPost(' + u.idx + ')" title="' +
+            u.title.replace(/"/g, '&quot;') + '">' + u.title + '</div>';
+        }).join('') +
+        '</div>';
+      d.setDate(d.getDate() + 1);
+    }
+    document.getElementById('calGrid').innerHTML = html;
+
+    var undated = calendarUnits.filter(function(u){ return !u.date; });
+    var undEl = document.getElementById('calUndated');
+    if (!undated.length){
+      undEl.innerHTML = '';
+    } else {
+      undEl.innerHTML = '<div class="cal-undated-label">Sem data ainda (' + undated.length + '):</div>' +
+        undated.map(function(u){
+          return '<span class="cal-chip cal-' + u.type + '" onclick="jumpToPost(' + u.idx + ')">' + u.title + '</span>';
+        }).join('');
+    }
+  }
+
+  function jumpToPost(idx){
+    var u = calendarUnits[idx];
+    if (!u) return;
+    document.getElementById('calendarView').classList.remove('show');
+    u.el.scrollIntoView({behavior:'smooth', block:'center'});
+    u.el.classList.add('flash-highlight');
+    setTimeout(function(){ u.el.classList.remove('flash-highlight'); }, 1700);
   }
 
   function markSaved(id){
@@ -1150,7 +1307,7 @@
     div.className = 'story';
     div.setAttribute('data-unit','story');
     div.innerHTML = '<button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>' +
-      '<div class="card-day" contenteditable="true">Dia · Story</div>' +
+      '<div class="card-day" contenteditable="true">Dia · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">' +
       '<h4 contenteditable="true">Novo story</h4>' +
       '<p contenteditable="true">Descrição do story...</p>';
     row.insertBefore(div, el);
@@ -1172,7 +1329,7 @@
     div.innerHTML = '<button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>' +
       '<button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>' +
       '<div class="card-head">' +
-        '<div class="card-day" contenteditable="true">Dia · Formato · duração</div>' +
+        '<div class="card-day" contenteditable="true">Dia · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">' +
         '<div class="card-title" contenteditable="true">Novo vídeo</div>' +
         '<div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>' +
       '</div>' +
