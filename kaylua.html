@@ -275,18 +275,22 @@
   }
   .cal-weekdays div{ background:var(--surface-2); padding:6px 0; }
   .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
-  .cal-cell{ background:#fff; min-height:78px; padding:4px; display:flex; flex-direction:column; gap:2px; }
+  .cal-cell{ background:#fff; min-height:78px; padding:4px; display:flex; flex-direction:column; gap:2px; transition:background .1s; }
   .cal-cell.cal-out{ background:var(--surface-2); }
   .cal-cell.cal-out .cal-daynum{ color:var(--ink-faint); opacity:0.5; }
+  .cal-cell.drag-over{ background:rgba(168,127,63,0.16); outline:2px dashed var(--gold); outline-offset:-2px; }
   .cal-daynum{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-bottom:2px; }
   .cal-chip{
-    font-size:10px; padding:2px 5px; cursor:pointer; overflow:hidden; text-overflow:ellipsis;
+    font-size:10px; padding:2px 5px; cursor:grab; overflow:hidden; text-overflow:ellipsis;
     white-space:nowrap; border-left:2px solid; line-height:1.5;
   }
+  .cal-chip:active{ cursor:grabbing; }
+  .cal-chip.dragging{ opacity:0.4; }
   .cal-chip.cal-video{ background:var(--card-gold); border-color:var(--gold); color:var(--gold-deep); }
   .cal-chip.cal-story{ background:var(--card-moss); border-color:var(--moss); color:var(--moss); }
   .cal-chip:hover{ filter:brightness(0.95); }
-  .cal-undated{ margin-top:14px; }
+  .cal-undated{ margin-top:14px; padding:10px; border:1px dashed transparent; transition:border-color .1s; }
+  .cal-undated.drag-over{ border-color:var(--brick); background:var(--card-brick); }
   .cal-undated-label{ font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin-bottom:6px; }
   .cal-undated .cal-chip{ display:inline-block; margin:0 6px 6px 0; }
   @keyframes flashHighlight{ 0%,100%{ box-shadow:0 0 0 0 rgba(168,127,63,0); } 30%{ box-shadow:0 0 0 4px rgba(168,127,63,0.5); } }
@@ -1132,18 +1136,22 @@
     var daysInMonth = new Date(y, m + 1, 0).getDate();
     var totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
 
+    function chipHTML(u){
+      return '<div class="cal-chip cal-' + u.type + '" draggable="true" data-idx="' + u.idx + '" ' +
+        'onclick="jumpToPost(' + u.idx + ')" ondragstart="dragStart(event,' + u.idx + ')" ondragend="dragEnd(event)" ' +
+        'title="' + u.title.replace(/"/g, '&quot;') + ' — arraste pra mudar de dia">' + u.title + '</div>';
+    }
+
     var html = '';
     var d = new Date(y, m, 1 - startWeekday);
     for (var i = 0; i < totalCells; i++){
       var inMonth = d.getMonth() === m;
       var iso = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
       var dayUnits = byDate[iso] || [];
-      html += '<div class="cal-cell' + (inMonth ? '' : ' cal-out') + '">' +
+      html += '<div class="cal-cell' + (inMonth ? '' : ' cal-out') + '" data-date="' + iso + '" ' +
+        'ondragover="cellDragOver(event)" ondragleave="cellDragLeave(event)" ondrop="dropOnCell(event,\'' + iso + '\')">' +
         '<div class="cal-daynum">' + d.getDate() + '</div>' +
-        dayUnits.map(function(u){
-          return '<div class="cal-chip cal-' + u.type + '" onclick="jumpToPost(' + u.idx + ')" title="' +
-            u.title.replace(/"/g, '&quot;') + '">' + u.title + '</div>';
-        }).join('') +
+        dayUnits.map(chipHTML).join('') +
         '</div>';
       d.setDate(d.getDate() + 1);
     }
@@ -1151,14 +1159,58 @@
 
     var undated = calendarUnits.filter(function(u){ return !u.date; });
     var undEl = document.getElementById('calUndated');
+    undEl.setAttribute('ondragover', 'cellDragOver(event)');
+    undEl.setAttribute('ondragleave', 'cellDragLeave(event)');
+    undEl.setAttribute('ondrop', 'dropOnUndated(event)');
     if (!undated.length){
-      undEl.innerHTML = '';
+      undEl.innerHTML = '<div class="cal-undated-label">Sem data ainda — arraste um post pra cá pra tirar a data.</div>';
     } else {
-      undEl.innerHTML = '<div class="cal-undated-label">Sem data ainda (' + undated.length + '):</div>' +
-        undated.map(function(u){
-          return '<span class="cal-chip cal-' + u.type + '" onclick="jumpToPost(' + u.idx + ')">' + u.title + '</span>';
-        }).join('');
+      undEl.innerHTML = '<div class="cal-undated-label">Sem data ainda (' + undated.length + ') — arraste pro grid pra agendar:</div>' +
+        undated.map(chipHTML).join('');
     }
+  }
+
+  var dragIdx = null;
+  function dragStart(ev, idx){
+    dragIdx = idx;
+    ev.dataTransfer.effectAllowed = 'move';
+    ev.target.classList.add('dragging');
+  }
+  function dragEnd(ev){
+    ev.target.classList.remove('dragging');
+    dragIdx = null;
+  }
+  function cellDragOver(ev){
+    ev.preventDefault();
+    ev.currentTarget.classList.add('drag-over');
+  }
+  function cellDragLeave(ev){
+    ev.currentTarget.classList.remove('drag-over');
+  }
+  function dropOnCell(ev, iso){
+    ev.preventDefault();
+    ev.currentTarget.classList.remove('drag-over');
+    if (dragIdx === null) return;
+    var u = calendarUnits[dragIdx];
+    if (!u) return;
+    u.el.querySelector('.post-date').value = iso;
+    dragIdx = null;
+    saveDebounced();
+    renderCalendar();
+    var dd = iso.split('-');
+    toast('Movido para ' + dd[2] + '/' + dd[1] + '/' + dd[0] + '.');
+  }
+  function dropOnUndated(ev){
+    ev.preventDefault();
+    ev.currentTarget.classList.remove('drag-over');
+    if (dragIdx === null) return;
+    var u = calendarUnits[dragIdx];
+    if (!u) return;
+    u.el.querySelector('.post-date').value = '';
+    dragIdx = null;
+    saveDebounced();
+    renderCalendar();
+    toast('Data removida — post voltou pra "sem data".');
   }
 
   function jumpToPost(idx){
