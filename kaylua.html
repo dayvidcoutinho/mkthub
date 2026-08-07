@@ -31,21 +31,46 @@
     margin:0; background:var(--bg); color:var(--ink);
     font-family:var(--sans); line-height:1.5;
     -webkit-font-smoothing:antialiased;
+    padding-left:84px;
   }
   .wrap{max-width:920px; margin:0 auto; padding:36px 24px 96px;}
 
-  /* Hub tab bar — shared nav across mkthub sections */
-  .hub-bar{ background:var(--surface-2); border-bottom:1px solid var(--line); }
-  .hub-tabs{
-    max-width:920px; margin:0 auto; padding:0 24px; display:flex; gap:2px; overflow-x:auto;
+  /* Hub sidebar — shared nav across mkthub sections */
+  .hub-sidebar{
+    position:fixed; top:0; left:0; bottom:0; width:84px; z-index:100;
+    background:#18171B; display:flex; flex-direction:column; align-items:center;
+    padding:22px 0 18px; gap:26px;
   }
+  .hub-mark{
+    width:38px; height:38px; border-radius:11px; background:var(--brand); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:#fff;
+    font-family:var(--serif); font-weight:700; font-size:13px; letter-spacing:-0.02em;
+  }
+  .hub-nav{ display:flex; flex-direction:column; gap:6px; width:100%; padding:0 10px; }
   .hub-tab{
-    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em;
-    padding:13px 16px; color:var(--ink-faint); text-decoration:none; border-bottom:2px solid transparent;
-    white-space:nowrap;
+    display:flex; flex-direction:column; align-items:center; gap:5px; width:100%;
+    padding:11px 4px 9px; border-radius:12px; text-decoration:none; color:rgba(255,255,255,0.42);
+    font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; text-align:center;
   }
-  .hub-tab:hover{ color:var(--ink); }
-  .hub-tab.active{ color:var(--brand); border-bottom-color:var(--brand); font-weight:600; }
+  .hub-tab-icon{ width:18px; height:18px; }
+  .hub-tab:hover{ color:rgba(255,255,255,0.82); background:rgba(255,255,255,0.07); }
+  .hub-tab.active{ color:#fff; background:rgba(255,255,255,0.14); }
+
+  /* Greeting / reminder bar */
+  .greet-bar{
+    max-width:920px; margin:30px auto 0; padding:0 24px;
+    display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  }
+  .greet-hello{ font-family:var(--serif); font-weight:700; font-size:clamp(20px,3vw,26px); display:flex; align-items:center; gap:8px; }
+  .greet-reminder{ font-size:13.5px; color:var(--ink-soft); margin-top:4px; max-width:520px; }
+  .greet-date{ font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+
+  @media (max-width:640px){
+    body{ padding-left:64px; }
+    .hub-sidebar{ width:64px; }
+    .hub-tab span{ display:none; }
+    .hub-mark{ width:32px; height:32px; font-size:11px; }
+  }
   ::selection{background:var(--gold); color:var(--surface);}
   a{color:inherit;}
   :focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
@@ -324,7 +349,7 @@
   /* ============ PRINT ============ */
   @media print{
     .no-print{ display:none !important; }
-    body{ background:#fff; color:#000; }
+    body{ background:#fff; color:#000; padding-left:0; }
     .wrap{ max-width:100%; padding:0; }
     .card, .story, .checklist{ box-shadow:none; border:1px solid #999; break-inside:avoid; }
     [contenteditable]{ background:none !important; box-shadow:none !important; }
@@ -345,12 +370,30 @@
   }
 </style>
 
-<div class="hub-bar no-print">
-  <nav class="hub-tabs">
-    <a href="/kaylua" class="hub-tab active">Kaylua Eventos</a>
-    <a href="/msb" class="hub-tab">MSB Construtora</a>
-    <a href="/calendario" class="hub-tab">Calendário Geral</a>
-  </nav>
+<nav class="hub-sidebar no-print" aria-label="mkthub">
+  <div class="hub-mark">mk</div>
+  <div class="hub-nav">
+    <a href="/kaylua" class="hub-tab active" title="Kaylua Eventos">
+      <svg class="hub-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      <span>Kaylua</span>
+    </a>
+    <a href="/msb" class="hub-tab" title="MSB Construtora">
+      <svg class="hub-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V7l8-4 8 4v14"/><path d="M4 21h16"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M9 14h.01M15 10h.01M15 14h.01"/></svg>
+      <span>MSB</span>
+    </a>
+    <a href="/calendario" class="hub-tab" title="Calendário Geral">
+      <svg class="hub-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+      <span>Agenda</span>
+    </a>
+  </div>
+</nav>
+
+<div class="greet-bar no-print">
+  <div>
+    <div class="greet-hello"><span id="greetHello">Bom dia</span> <span aria-hidden="true">👋</span></div>
+    <div class="greet-reminder" id="greetReminder">Carregando lembrete do dia…</div>
+  </div>
+  <div class="greet-date" id="greetDate">—</div>
 </div>
 
 <div class="wrap" id="app">
@@ -1288,6 +1331,7 @@
           document.getElementById('saveState').textContent = 'nenhuma versão salva ainda — comece editando';
         }
         wireChecklist();
+        renderGreeting();
       })
       .catch(function(){
         document.getElementById('saveState').textContent = 'erro ao carregar — verifique sua conexão e recarregue a página';
@@ -1521,7 +1565,36 @@
     evt.target.value = '';
   }
 
+  // ---- Saudação + lembrete do dia (fora do #app: sempre ao vivo, nunca salvo) ----
+  function renderGreeting(){
+    var h = new Date().getHours();
+    var helloEl = document.getElementById('greetHello');
+    if (helloEl) helloEl.textContent = h < 12 ? 'Bom dia' : (h < 18 ? 'Boa tarde' : 'Boa noite');
+    var dateEl = document.getElementById('greetDate');
+    if (dateEl){
+      var txt = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+      dateEl.textContent = txt.charAt(0).toUpperCase() + txt.slice(1);
+    }
+    var remEl = document.getElementById('greetReminder');
+    if (remEl){
+      var todayStr = new Date().toISOString().slice(0,10);
+      var units = collectUnits().filter(function(u){ return u.date; }).sort(function(a,b){ return a.date.localeCompare(b.date); });
+      var today = units.filter(function(u){ return u.date === todayStr; });
+      var future = units.filter(function(u){ return u.date > todayStr; });
+      if (today.length){
+        remEl.textContent = (today.length === 1 ? 'Hoje: ' : today.length + ' pra hoje: ') + today.map(function(u){ return u.title; }).join(' · ');
+      } else if (future.length){
+        var next = future[0];
+        var nextDate = new Date(next.date + 'T00:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        remEl.textContent = 'Nada marcado pra hoje. Próximo: ' + nextDate + ' · ' + next.title;
+      } else {
+        remEl.textContent = 'Nenhum post com data marcada ainda.';
+      }
+    }
+  }
+
   // ---- Wire up autosave on any edit ----
   document.getElementById('app').addEventListener('input', saveDebounced);
+  renderGreeting();
   restore();
 </script>
