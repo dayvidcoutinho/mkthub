@@ -141,6 +141,14 @@
   /* Week section */
   .week{margin-bottom:44px; position:relative;}
   .week-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px;}
+  .week-toggle{
+    background:none; border:1px solid var(--line); color:var(--ink-faint); cursor:pointer;
+    width:22px; height:22px; flex-shrink:0; padding:0; font-size:11px; line-height:1;
+    display:flex; align-items:center; justify-content:center; align-self:center;
+  }
+  .week-toggle:hover{ color:var(--gold-deep); border-color:var(--gold-deep); }
+  .week.collapsed .week-rule, .week.collapsed .day-grid,
+  .week.collapsed .add-video, .week.collapsed .stories{ display:none; }
   .week-num{font-family:var(--serif); font-size:13px; color:var(--gold-deep); letter-spacing:0.1em; white-space:nowrap;}
   .week-title{font-family:var(--serif); font-weight:700; font-size:21px; flex:1;}
   .week-rule{height:1px; background:linear-gradient(to right, var(--gold), transparent); margin:10px 0 22px;}
@@ -356,6 +364,8 @@
     body{ background:#fff; color:#000; padding-left:0; }
     .wrap{ max-width:100%; padding:0; }
     .page-logo{ max-width:100%; padding:0; margin:0 0 14px; }
+    .week.collapsed .week-rule, .week.collapsed .day-grid,
+    .week.collapsed .add-video, .week.collapsed .stories{ display:block !important; }
     .card, .story, .checklist{ box-shadow:none; border:1px solid #999; break-inside:avoid; }
     [contenteditable]{ background:none !important; box-shadow:none !important; }
     details{ display:block !important; }
@@ -462,6 +472,7 @@
   <!-- ===================== SEMANA 1 ===================== -->
   <div class="week" data-unit="week">
     <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
       <span class="week-num" contenteditable="true">SEMANA 1</span>
       <span class="week-title" contenteditable="true">Prova Social + Estreia da Gleyci</span>
     </div>
@@ -626,6 +637,7 @@
   <!-- ===================== SEMANA 2 ===================== -->
   <div class="week" data-unit="week">
     <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
       <span class="week-num" contenteditable="true">SEMANA 2</span>
       <span class="week-title" contenteditable="true">Escala e Aspiracional</span>
     </div>
@@ -775,6 +787,7 @@
   <!-- ===================== SEMANA 3 ===================== -->
   <div class="week" data-unit="week">
     <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
       <span class="week-num" contenteditable="true">SEMANA 3</span>
       <span class="week-title" contenteditable="true">Detalhe e Descoberta</span>
     </div>
@@ -923,6 +936,7 @@
   <!-- ===================== SEMANA 4 ===================== -->
   <div class="week" data-unit="week">
     <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
       <span class="week-num" contenteditable="true">SEMANA 4</span>
       <span class="week-title" contenteditable="true">Fechamento do Mês + Anúncio do Casamento</span>
     </div>
@@ -1508,6 +1522,13 @@
     saveDebounced();
   }
 
+  function toggleWeek(btn){
+    var week = btn.closest('.week');
+    var collapsed = week.classList.toggle('collapsed');
+    btn.textContent = collapsed ? '▸' : '▾';
+    saveDebounced();
+  }
+
   function addWeek(){
     var weeks = document.getElementById('weeks');
     var n = weeks.querySelectorAll('.week').length + 1;
@@ -1515,7 +1536,7 @@
     div.className = 'week';
     div.setAttribute('data-unit','week');
     div.innerHTML =
-      '<div class="week-head"><span class="week-num" contenteditable="true">SEMANA ' + n + '</span>' +
+      '<div class="week-head"><button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button><span class="week-num" contenteditable="true">SEMANA ' + n + '</span>' +
       '<span class="week-title" contenteditable="true">Novo tema da semana</span></div>' +
       '<div class="week-rule"></div>' +
       '<div class="day-grid"></div>' +
