@@ -1612,6 +1612,14 @@
   }
 
   // ---- Wire up autosave on any edit ----
+  // Colar sempre como texto puro — colar HTML rico (de Docs, chats de IA etc.)
+  // dentro de um campo editável quebra a estrutura interna e trava edições futuras.
+  document.getElementById('app').addEventListener('paste', function(e){
+    if (!e.target.closest('[contenteditable="true"]')) return;
+    e.preventDefault();
+    var text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+  });
   document.getElementById('app').addEventListener('input', saveDebounced);
   renderGreeting();
   restore();
