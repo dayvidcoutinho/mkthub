@@ -261,7 +261,7 @@
       html += '<div class="cal-cell' + (inMonth ? '' : ' cal-out') + '">' +
         '<div class="cal-daynum">' + d.getDate() + '</div>' +
         dayUnits.map(function(u){
-          return '<a class="cal-chip ' + u.source + '" href="' + u.page + '" title="' +
+          return '<a class="cal-chip ' + u.source + '" href="' + u.page + '#d-' + encodeURIComponent(u.date) + '" title="' +
             u.title.replace(/"/g, '&quot;') + ' — abrir ' + u.page + '">' + u.title + '</a>';
         }).join('') +
         '</div>';

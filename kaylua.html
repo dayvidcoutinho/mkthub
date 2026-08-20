@@ -1332,6 +1332,17 @@
 
   function save(){
     markSaving();
+    // O atributo HTML de <input> nao acompanha mudanca de valor feita pelo usuario
+    // (arrastar post no calendario, digitar nova data, marcar checkbox) - so a
+    // propriedade viva muda. innerHTML serializa o atributo, entao sem isso a
+    // mudanca nunca ia pro servidor. Sincroniza atributo <- propriedade antes de salvar.
+    document.querySelectorAll('#app input').forEach(function(inp){
+      if (inp.type === 'checkbox'){
+        if (inp.checked) inp.setAttribute('checked',''); else inp.removeAttribute('checked');
+      } else {
+        inp.setAttribute('value', inp.value);
+      }
+    });
     fetch(API_BASE, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -1364,6 +1375,7 @@
         }
         wireChecklist();
         renderGreeting();
+        jumpToHash();
       })
       .catch(function(){
         document.getElementById('saveState').textContent = 'erro ao carregar — verifique sua conexão e recarregue a página';
@@ -1605,6 +1617,21 @@
   }
 
   // ---- Saudação + lembrete do dia (fora do #app: sempre ao vivo, nunca salvo) ----
+  // ---- Pular direto pro post ao chegar via link do Calendario Geral (#d-AAAA-MM-DD) ----
+  function jumpToHash(){
+    var m = location.hash.match(/^#d-(.+)$/);
+    if (!m) return;
+    var date = decodeURIComponent(m[1]);
+    var input = document.querySelector('#app .post-date[value="' + date + '"]');
+    if (!input) return;
+    var el = input.closest('[data-unit]');
+    if (!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    el.classList.add('flash-highlight');
+    setTimeout(function(){ el.classList.remove('flash-highlight'); }, 1700);
+  }
+  window.addEventListener('hashchange', jumpToHash);
+
   function renderGreeting(){
     var h = new Date().getHours();
     var helloEl = document.getElementById('greetHello');
