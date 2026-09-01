@@ -121,10 +121,26 @@
     text-transform:uppercase; letter-spacing:0.08em; line-height:1.7;
   }
 
-  /* Divisor de mês — separa blocos de meses diferentes dentro da mesma página */
+  /* Abas de mês — cada .month-group só aparece quando sua aba está ativa */
+  .month-tabs{ display:flex; align-items:center; gap:2px; margin-bottom:28px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .month-tab{
+    font-family:var(--serif); font-weight:700; font-size:14px; padding:10px 18px;
+    background:none; border:none; border-bottom:2px solid transparent; color:var(--ink-faint); cursor:pointer;
+  }
+  .month-tab:hover{ color:var(--ink); }
+  .month-tab.active{ color:var(--gold-deep); border-bottom-color:var(--gold-deep); }
+  .month-tab-add{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+    padding:10px 14px; background:none; border:none; color:var(--gold-deep); cursor:pointer; margin-left:6px;
+  }
+  .month-tab-add:hover{ text-decoration:underline; }
+  .month-group{ display:none; }
+  .month-group.active{ display:block; }
+
+  /* Cabeçalho interno de cada mês (dentro do .month-group) */
   .month-divider{
     display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
-    margin:64px 0 32px; padding-top:32px; border-top:3px double var(--ink); flex-wrap:wrap;
+    margin:0 0 32px; flex-wrap:wrap;
   }
   .month-divider h2{
     font-family:var(--serif); font-weight:700; font-size:clamp(24px,3.6vw,34px);
@@ -381,6 +397,7 @@
     .page-logo{ max-width:100%; padding:0; margin:0 0 14px; }
     .week.collapsed .week-rule, .week.collapsed .day-grid,
     .week.collapsed .add-video, .week.collapsed .stories{ display:block !important; }
+    .month-group{ display:block !important; }
     .card, .story, .checklist{ box-shadow:none; border:1px solid #999; break-inside:avoid; }
     [contenteditable]{ background:none !important; box-shadow:none !important; }
     details{ display:block !important; }
@@ -484,6 +501,13 @@
   </div>
 
   <div id="weeks">
+  <div class="month-tabs no-print">
+    <button class="month-tab" data-month="1" onclick="showMonth(1)">Mês 1</button>
+    <button class="month-tab" data-month="2" onclick="showMonth(2)">Mês 2</button>
+    <button class="month-tab-add no-print" onclick="addMonth()">+ Novo mês</button>
+  </div>
+
+  <div class="month-group" data-month="1">
   <!-- ===================== SEMANA 1 ===================== -->
   <div class="week" data-unit="week">
     <div class="week-head">
@@ -1097,7 +1121,9 @@
       <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
     </div>
   </div>
+  </div>
 
+  <div class="month-group" data-month="2">
   <div class="month-divider">
     <div>
       <h2 contenteditable="true">Mês 2 — Setembro/2026</h2>
@@ -1450,9 +1476,10 @@
     </div>
   </div>
   </div>
+  </div>
 
   <div class="add-week-wrap no-print">
-    <button class="add-week" onclick="addWeek()">+ Adicionar nova semana / mês seguinte</button>
+    <button class="add-week" onclick="addWeek()">+ Adicionar nova semana (no mês da aba ativa)</button>
   </div>
 
   <!-- ===================== CHECKLIST ===================== -->
@@ -1677,10 +1704,50 @@
     toast('Data removida — post voltou pra "sem data".');
   }
 
+  // ---- Abas de mês ----
+  function initMonthTabs(){
+    var groups = document.querySelectorAll('.month-group');
+    if (groups.length) showMonth(groups[groups.length - 1].getAttribute('data-month'));
+  }
+  function showMonth(n){
+    n = String(n);
+    document.querySelectorAll('.month-group').forEach(function(g){
+      g.classList.toggle('active', g.getAttribute('data-month') === n);
+    });
+    document.querySelectorAll('.month-tab').forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-month') === n);
+    });
+  }
+
+  function addMonth(){
+    var groups = document.querySelectorAll('.month-group');
+    var n = groups.length + 1;
+    var weeksEl = document.getElementById('weeks');
+    var group = document.createElement('div');
+    group.className = 'month-group';
+    group.setAttribute('data-month', n);
+    group.innerHTML =
+      '<div class="month-divider"><div><h2 contenteditable="true">Mês ' + n + '</h2>' +
+      '<div class="sub" contenteditable="true">V1 — a organizar</div></div>' +
+      '<div class="status" contenteditable="true">aguardando pauta</div></div>';
+    weeksEl.appendChild(group);
+    var tab = document.createElement('button');
+    tab.className = 'month-tab';
+    tab.setAttribute('data-month', n);
+    tab.textContent = 'Mês ' + n;
+    tab.onclick = function(){ showMonth(n); };
+    document.querySelector('.month-tabs').insertBefore(tab, document.querySelector('.month-tab-add'));
+    showMonth(n);
+    group.scrollIntoView({behavior:'smooth', block:'start'});
+    saveDebounced();
+  }
+
   function jumpToPost(idx){
     var u = calendarUnits[idx];
     if (!u) return;
     document.getElementById('calendarView').classList.remove('show');
+    var g = u.el.closest('.month-group');
+    if (g) showMonth(g.getAttribute('data-month'));
     u.el.scrollIntoView({behavior:'smooth', block:'center'});
     u.el.classList.add('flash-highlight');
     setTimeout(function(){ u.el.classList.remove('flash-highlight'); }, 1700);
@@ -1742,6 +1809,7 @@
         }
         wireChecklist();
         renderGreeting();
+        initMonthTabs();
         jumpToHash();
       })
       .catch(function(){
@@ -1909,7 +1977,7 @@
   }
 
   function addWeek(){
-    var weeks = document.getElementById('weeks');
+    var weeks = document.querySelector('.month-group.active') || document.getElementById('weeks');
     var n = weeks.querySelectorAll('.week').length + 1;
     var div = document.createElement('div');
     div.className = 'week';
@@ -1993,6 +2061,8 @@
     if (!input) return;
     var el = input.closest('[data-unit]');
     if (!el) return;
+    var g = el.closest('.month-group');
+    if (g) showMonth(g.getAttribute('data-month'));
     el.scrollIntoView({behavior:'smooth', block:'center'});
     el.classList.add('flash-highlight');
     setTimeout(function(){ el.classList.remove('flash-highlight'); }, 1700);
@@ -2037,5 +2107,6 @@
   });
   document.getElementById('app').addEventListener('input', saveDebounced);
   renderGreeting();
+  initMonthTabs();
   restore();
 </script>
