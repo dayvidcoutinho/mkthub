@@ -121,6 +121,21 @@
     text-transform:uppercase; letter-spacing:0.08em; line-height:1.7;
   }
 
+  /* Divisor de mês — separa blocos de meses diferentes dentro da mesma página */
+  .month-divider{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+    margin:64px 0 32px; padding-top:32px; border-top:3px double var(--ink); flex-wrap:wrap;
+  }
+  .month-divider h2{
+    font-family:var(--serif); font-weight:700; font-size:clamp(24px,3.6vw,34px);
+    margin:0 0 4px; letter-spacing:-0.01em;
+  }
+  .month-divider .sub{ font-size:13.5px; color:var(--ink-soft); font-style:italic; }
+  .month-divider .status{
+    text-align:right; font-family:var(--mono); font-size:11.5px; color:var(--ink-faint);
+    text-transform:uppercase; letter-spacing:0.08em; line-height:1.7;
+  }
+
   .callout{
     background:var(--surface-2); border-left:3px solid var(--brick);
     padding:16px 20px; margin-bottom:36px; font-size:14.5px; color:var(--ink-soft);
@@ -1078,6 +1093,358 @@
         <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
         <h4 contenteditable="true">Reforço final</h4>
         <p contenteditable="true">Repost do anúncio "Casamento" + CTA de fechamento do mês. Fixar nos destaques do perfil.</p>
+      </div>
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+
+  <div class="month-divider">
+    <div>
+      <h2 contenteditable="true">Mês 2 — Setembro/2026</h2>
+      <div class="sub" contenteditable="true">V1 — a organizar</div>
+    </div>
+    <div class="status" contenteditable="true">aguardando pauta<br>datas seguem terça/quinta como o mês 1</div>
+  </div>
+
+  <!-- ===================== MÊS 2 · SEMANA 1 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
+      <span class="week-num" contenteditable="true">SEMANA 1</span>
+      <span class="week-title" contenteditable="true">Novo tema da semana</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Terça · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-09-08" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quinta · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-09-10" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar vídeo nesta semana</button>
+
+    <div class="stories">
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+
+  <!-- ===================== MÊS 2 · SEMANA 2 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
+      <span class="week-num" contenteditable="true">SEMANA 2</span>
+      <span class="week-title" contenteditable="true">Novo tema da semana</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Terça · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-09-15" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quinta · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-09-17" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar vídeo nesta semana</button>
+
+    <div class="stories">
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+
+  <!-- ===================== MÊS 2 · SEMANA 3 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
+      <span class="week-num" contenteditable="true">SEMANA 3</span>
+      <span class="week-title" contenteditable="true">Novo tema da semana</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Terça · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-09-22" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quinta · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-09-24" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar vídeo nesta semana</button>
+
+    <div class="stories">
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
+    </div>
+  </div>
+
+  <!-- ===================== MÊS 2 · SEMANA 4 ===================== -->
+  <div class="week" data-unit="week">
+    <div class="week-head">
+      <button class="week-toggle no-print" onclick="toggleWeek(this)" title="Minimizar/expandir semana">▾</button>
+      <span class="week-num" contenteditable="true">SEMANA 4</span>
+      <span class="week-title" contenteditable="true">Novo tema da semana</span>
+    </div>
+    <div class="week-rule"></div>
+
+    <div class="day-grid">
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Terça · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-09-29" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+      <div class="card video" data-unit="card">
+        <button class="icon-btn del-card no-print" onclick="delCard(this)" title="Remover card">×</button>
+        <button class="icon-btn print-card no-print" onclick="printOne(this)" title="Imprimir este roteiro">🖨</button>
+        <div class="card-head">
+          <div class="card-day" contenteditable="true">Quinta · Formato · duração</div><input type="date" class="post-date" data-field="date" title="Data agendada" value="2026-10-01" onchange="saveDebounced()">
+          <div class="card-title" contenteditable="true">Novo vídeo</div>
+          <div class="tags"><span class="tag gold" contenteditable="true">Pilar</span></div>
+        </div>
+        <div class="meta">
+          <div><b>Local</b><span contenteditable="true">—</span></div>
+          <div><b>Protagonista</b><span contenteditable="true">—</span></div>
+          <div><b>Câmera</b><span contenteditable="true">—</span></div>
+          <div><b>Observação</b><span contenteditable="true">—</span></div>
+        </div>
+        <details open><summary>Roteiro completo</summary><div class="script">
+          <div class="beat"><button class="icon-btn no-print" onclick="delBeat(this)" title="Remover bloco">×</button>
+          <span class="beat-time" contenteditable="true">0–0s</span>
+          <div class="beat-label" contenteditable="true">Abertura</div>
+          <p class="beat-desc" contenteditable="true">Descrição da cena...</p></div>
+        </div><button class="add-beat no-print" onclick="addBeat(this)">+ Adicionar bloco</button>
+        <div class="copy-block"><b>Copy da legenda</b>
+          <span class="copy-text" contenteditable="true">Escreva a legenda aqui...</span>
+          <span class="cta"><b>CTA:</b> <span contenteditable="true">Chamada para ação...</span></span>
+        </div></details>
+      </div>
+    </div>
+    <button class="add-video no-print" onclick="addVideo(this)">+ Adicionar vídeo nesta semana</button>
+
+    <div class="stories">
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Terça · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Quarta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
+      </div>
+      <div class="story" data-unit="story">
+        <button class="icon-btn no-print" onclick="delStory(this)" title="Remover story">×</button>
+        <div class="card-day" contenteditable="true">Sexta · Story</div><input type="date" class="post-date" data-field="date" title="Data agendada" onchange="saveDebounced()">
+        <h4 contenteditable="true">Novo story</h4>
+        <p contenteditable="true">Descrição do story...</p>
       </div>
       <div class="add-story no-print" onclick="addStory(this)">+ Story</div>
     </div>
