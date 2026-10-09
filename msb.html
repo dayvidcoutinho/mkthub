@@ -299,6 +299,16 @@
   .check-item input{margin-top:3px; width:15px; height:15px; accent-color:var(--gold-deep); flex-shrink:0;}
   .check-item label{cursor:text; flex:1;}
   .check-item.done label{color:var(--ink-faint); text-decoration:line-through;}
+
+  /* Banco de ideias — aqui marcar significa "me interessa", não "feito" (sem riscado) */
+  .idea-bank h3{
+    font-family:var(--serif); font-size:12.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--gold-deep); margin:24px 0 6px; padding-top:16px; border-top:1px solid var(--line-soft);
+  }
+  .idea-bank h3:first-of-type{ border-top:none; padding-top:0; margin-top:12px; }
+  .idea-bank .check-item{ padding-left:8px; padding-right:8px; }
+  .idea-bank .check-item.done{ background:var(--card-gold); }
+  .idea-bank .check-item.done label{ color:var(--ink); text-decoration:none; font-weight:600; }
   .add-check{
     margin-top:14px; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
     color:var(--gold-deep); background:none; border:1px dashed var(--gold); padding:7px 12px; cursor:pointer;
@@ -1504,7 +1514,11 @@
     var div = document.createElement('div');
     div.className = 'check-item';
     div.innerHTML = '<input type="checkbox" id="' + id + '"><label for="' + id + '" contenteditable="true">Novo item</label>';
-    btn.parentElement.insertBefore(div, btn);
+    // Se o botão vem logo depois de uma .check-grid, o item entra na grade (assim o
+    // checkbox é ligado por wireChecklist()); senão mantém o comportamento antigo.
+    var grid = btn.previousElementSibling;
+    if (grid && grid.classList.contains('check-grid')) grid.appendChild(div);
+    else btn.parentElement.insertBefore(div, btn);
     wireChecklist();
     div.querySelector('label').focus();
     saveDebounced();
