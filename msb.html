@@ -1413,7 +1413,7 @@
   }
 
   function wireChecklist(){
-    document.querySelectorAll('#checklist input[type=checkbox]').forEach(function(box){
+    document.querySelectorAll('.check-grid input[type=checkbox]').forEach(function(box){
       box.onchange = function(){
         box.closest('.check-item').classList.toggle('done', box.checked);
         saveDebounced();
