@@ -494,7 +494,7 @@
   </div>
 
   <div class="callout">
-    <strong>Antes de gravar, um alinhamento importante:</strong>
+    <strong contenteditable="true">Antes de gravar, um alinhamento importante:</strong>
     <ul>
       <li contenteditable="true">Este conteúdo replica o "Calendário Completo — 1 Mês" original da MSB (Papo de Obra, Drone, Ferramentas da Obra etc.). Uma auditoria do Instagram real (@msbconstrutoranf) mostrou que a bio ainda não usa a tagline definida ("Engenharia que transforma cidades"), os destaques planejados não foram criados, e os posts recentes vêm saindo como "vlog" genérico, não como "Papo de Obra Ep.X". Confirmar com o time se esse plano ainda é o que vale ou se precisa de ajuste antes de retomar.</li>
       <li contenteditable="true">A Gleyci aparece em 6 dos 12 posts do mês — confirmar agenda de gravação com ela antes de fechar o calendário.</li>
@@ -502,12 +502,12 @@
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="n">16</div><div class="l">Posts</div></div>
-    <div class="stat"><div class="n">12</div><div class="l">Reels</div></div>
-    <div class="stat"><div class="n">4</div><div class="l">Estáticos</div></div>
-    <div class="stat"><div class="n">3</div><div class="l">Posts/semana</div></div>
-    <div class="stat"><div class="n">2</div><div class="l">Voos de drone</div></div>
-    <div class="stat"><div class="n">6</div><div class="l">Gleyci em vídeo</div></div>
+    <div class="stat"><div class="n" contenteditable="true">16</div><div class="l" contenteditable="true">Posts</div></div>
+    <div class="stat"><div class="n" contenteditable="true">12</div><div class="l" contenteditable="true">Reels</div></div>
+    <div class="stat"><div class="n" contenteditable="true">4</div><div class="l" contenteditable="true">Estáticos</div></div>
+    <div class="stat"><div class="n" contenteditable="true">3</div><div class="l" contenteditable="true">Posts/semana</div></div>
+    <div class="stat"><div class="n" contenteditable="true">2</div><div class="l" contenteditable="true">Voos de drone</div></div>
+    <div class="stat"><div class="n" contenteditable="true">6</div><div class="l" contenteditable="true">Gleyci em vídeo</div></div>
   </div>
 
   <div id="weeks">
@@ -1043,7 +1043,7 @@
   <!-- ===================== CHECKLIST ===================== -->
   <div class="checklist">
     <h2 contenteditable="true">Checklist de Produção do Mês</h2>
-    <div class="sub">Marque conforme for resolvendo — fica salvo compartilhado.</div>
+    <div class="sub" contenteditable="true">Marque conforme for resolvendo — fica salvo compartilhado.</div>
     <div class="check-grid" id="checklist">
       <div class="check-item"><input type="checkbox" id="c1"><label for="c1" contenteditable="true">Agendar voo de drone — 2 datas no mês</label></div>
       <div class="check-item"><input type="checkbox" id="c2"><label for="c2" contenteditable="true">Confirmar engenheiro para Papo de Obra Ep.12 e Ep.13</label></div>
@@ -1657,7 +1657,7 @@
   // Campos de UMA linha (titulos, rotulos, datas, tags...): Enter e quebra de linha colada
   // criavam <div> dentro do campo, que e' o que bagunca o layout e faz a edicao travar.
   // Campos de varias linhas (beat-desc, line-fala, copy-text, beat-cam, .status) seguem livres.
-  var SINGLE_LINE = '.card-title,.beat-label,.beat-time,.card-day,.week-title,.week-num,.tag,h2,h4,.sub,.check-item label,.meta span';
+  var SINGLE_LINE = '.card-title,.beat-label,.beat-time,.card-day,.week-title,.week-num,.tag,h2,h4,.sub,.check-item label,.meta span,.stat .n,.stat .l';
   function isSingleLine(el){
     return el && el.matches && el.getAttribute('contenteditable') === 'true' && el.matches(SINGLE_LINE);
   }

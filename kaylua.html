@@ -484,7 +484,7 @@
   </div>
 
   <div class="callout">
-    <strong>Antes de gravar, duas dependências em aberto:</strong>
+    <strong contenteditable="true">Antes de gravar, duas dependências em aberto:</strong>
     <ul>
       <li contenteditable="true">O card <strong>"Casamento"</strong> precisa existir no mídia kit antes da gravação da Semana 4, Quinta — o roteiro já assume que ele existe.</li>
       <li contenteditable="true">Este é o v1, montado só com os ativos já mapeados (fotos Zé Paixão, banco Fotos Kaylua, tour de drone Criatto). Quando o pré-editorial e as fotos novas chegarem, este documento é atualizado por cima — não substituído do zero.</li>
@@ -492,12 +492,12 @@
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="n">8</div><div class="l">Vídeos</div></div>
-    <div class="stat"><div class="n">12</div><div class="l">Stories</div></div>
-    <div class="stat"><div class="n">4</div><div class="l">Gleyci — Oferta</div></div>
-    <div class="stat"><div class="n">2</div><div class="l">Uso de drone</div></div>
-    <div class="stat"><div class="n">1</div><div class="l">Anúncio oficial</div></div>
-    <div class="stat"><div class="n">4</div><div class="l">Semanas</div></div>
+    <div class="stat"><div class="n" contenteditable="true">8</div><div class="l" contenteditable="true">Vídeos</div></div>
+    <div class="stat"><div class="n" contenteditable="true">12</div><div class="l" contenteditable="true">Stories</div></div>
+    <div class="stat"><div class="n" contenteditable="true">4</div><div class="l" contenteditable="true">Gleyci — Oferta</div></div>
+    <div class="stat"><div class="n" contenteditable="true">2</div><div class="l" contenteditable="true">Uso de drone</div></div>
+    <div class="stat"><div class="n" contenteditable="true">1</div><div class="l" contenteditable="true">Anúncio oficial</div></div>
+    <div class="stat"><div class="n" contenteditable="true">4</div><div class="l" contenteditable="true">Semanas</div></div>
   </div>
 
   <div id="weeks">
@@ -1485,7 +1485,7 @@
   <!-- ===================== CHECKLIST ===================== -->
   <div class="checklist">
     <h2 contenteditable="true">Checklist de Produção do Mês</h2>
-    <div class="sub">Marque conforme for resolvendo — fica salvo neste navegador.</div>
+    <div class="sub" contenteditable="true">Marque conforme for resolvendo — fica salvo neste navegador.</div>
     <div class="check-grid" id="checklist">
       <div class="check-item"><input type="checkbox" id="c1"><label for="c1" contenteditable="true">Selecionar e tratar 6–8 fotos do Zé Paixão para o vídeo da Semana 1</label></div>
       <div class="check-item"><input type="checkbox" id="c2"><label for="c2" contenteditable="true">Cortar teaser de 25–30s do Tour Criatto.mp4 para a Semana 2</label></div>
@@ -2102,7 +2102,7 @@
   // Campos de UMA linha (titulos, rotulos, datas, tags...): Enter e quebra de linha colada
   // criavam <div> dentro do campo, que e' o que bagunca o layout e faz a edicao travar.
   // Campos de varias linhas (beat-desc, line-fala, copy-text, beat-cam, .status) seguem livres.
-  var SINGLE_LINE = '.card-title,.beat-label,.beat-time,.card-day,.week-title,.week-num,.tag,h2,h4,.sub,.check-item label,.meta span';
+  var SINGLE_LINE = '.card-title,.beat-label,.beat-time,.card-day,.week-title,.week-num,.tag,h2,h4,.sub,.check-item label,.meta span,.stat .n,.stat .l';
   function isSingleLine(el){
     return el && el.matches && el.getAttribute('contenteditable') === 'true' && el.matches(SINGLE_LINE);
   }
