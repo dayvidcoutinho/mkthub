@@ -2099,10 +2099,27 @@
   // ---- Wire up autosave on any edit ----
   // Colar sempre como texto puro — colar HTML rico (de Docs, chats de IA etc.)
   // dentro de um campo editável quebra a estrutura interna e trava edições futuras.
+  // Campos de UMA linha (titulos, rotulos, datas, tags...): Enter e quebra de linha colada
+  // criavam <div> dentro do campo, que e' o que bagunca o layout e faz a edicao travar.
+  // Campos de varias linhas (beat-desc, line-fala, copy-text, beat-cam, .status) seguem livres.
+  var SINGLE_LINE = '.card-title,.beat-label,.beat-time,.card-day,.week-title,.week-num,.tag,h2,h4,.sub,.check-item label,.meta span';
+  function isSingleLine(el){
+    return el && el.matches && el.getAttribute('contenteditable') === 'true' && el.matches(SINGLE_LINE);
+  }
+  document.getElementById('app').addEventListener('keydown', function(e){
+    if (e.key !== 'Enter') return;
+    var field = e.target.closest ? e.target.closest('[contenteditable="true"]') : null;
+    if (isSingleLine(field)){
+      e.preventDefault();
+      field.blur();
+    }
+  });
   document.getElementById('app').addEventListener('paste', function(e){
-    if (!e.target.closest('[contenteditable="true"]')) return;
+    var field = e.target.closest ? e.target.closest('[contenteditable="true"]') : null;
+    if (!field) return;
     e.preventDefault();
     var text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    if (isSingleLine(field)) text = text.replace(/\s*[\r\n]+\s*/g, ' ').trim();
     document.execCommand('insertText', false, text);
   });
   document.getElementById('app').addEventListener('input', saveDebounced);
